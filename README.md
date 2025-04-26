@@ -19,13 +19,20 @@ Maritime security forces and coastal communities in countries impacted by Chines
   - Simple, intuitive UI for low-technical-literacy users
   - Offline capability with automatic data synchronization when online
 
-#### SMS Reporting (Secondary)
+#### WhatsApp Reporting (Secondary)
+- **Features:**
+  - Basic reporting using structured WhatsApp messages (predefined message format)
+  - Requires minimal user input (incident type, vessel ID, basic description)
+  - WhatsApp gateway parsing for automatic ingestion into the cloud database
+  - Matrix bridge integration to process data and automate responses. 
+
+#### SMS Reporting (Tertiary)
 - **Features:**
   - Basic reporting using structured SMS (predefined message format)
   - Requires minimal user input (incident type, vessel ID, basic description)
   - SMS gateway parsing for automatic ingestion into the cloud database
 
-#### Web Reporting (Secondary)
+#### Web Reporting (Option)
 - **Platform:** Responsive web interface
 - **Features:**
   - Simplified online form
