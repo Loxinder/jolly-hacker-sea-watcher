@@ -22,7 +22,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       const mockUser = {
         id: "user-123",
         name: username,
-        score: 42,
+        score: 3,
       }
 
       onLogin(mockUser)

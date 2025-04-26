@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
-import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut } from "lucide-react"
+import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut, Star } from "lucide-react"
 
 interface ShipReportFormProps {
   user: { id: string; name: string; score: number } | null
@@ -164,6 +164,28 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
     }, 1500)
   }
 
+  // Function to render stars based on score
+  const renderStars = (score: number) => {
+    const stars = [];
+    const maxDisplayedStars = 5;
+    const fullStars = Math.min(score, maxDisplayedStars);
+    
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <Star key={i} className="h-6 w-6 fill-yellow-400 text-yellow-400" />
+      );
+    }
+    
+    // Add empty stars to complete the set
+    for (let i = fullStars; i < maxDisplayedStars; i++) {
+      stars.push(
+        <Star key={i + 'empty'} className="h-6 w-6 text-gray-300" />
+      );
+    }
+    
+    return stars;
+  };
+
   // Clean up camera stream on unmount
   useEffect(() => {
     return () => {
@@ -176,20 +198,6 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <p className="text-sm font-medium">Logged in as: {user?.name}</p>
-          <p className="text-sm">Score: {user?.score}</p>
-        </div>
-        <button
-          onClick={onLogout}
-          className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </button>
-      </div>
-
       {isSuccess ? (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-2">
@@ -226,7 +234,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="description" className="block text-sm font-medium">
-              Ship Description
+              Provide Details
             </label>
             <textarea
               id="description"
@@ -240,7 +248,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Ship Image</label>
+            <label className="block text-sm font-medium">Send Image</label>
             {imagePreview ? (
               <div className="border rounded-md p-2">
                 <img
@@ -299,7 +307,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Location</label>
+            <label className="block text-sm font-medium">Send Location</label>
             {location ? (
               <div className="p-3 bg-gray-100 rounded-md">
                 <div className="flex items-center text-sm">
@@ -350,6 +358,49 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               <p className="text-sm mt-1">You're reporting as a guest. Your report will be anonymous.</p>
             </div>
           )}
+
+          {/* Maritime Observer Status and User Info */}
+          <div className="mt-8 pt-4 border-t">
+            {/* Observer Status */}
+            {user && (
+              <div className="mb-4 bg-gradient-to-b from-blue-50 to-white p-4 rounded-lg border border-blue-100">
+                <p className="text-sm font-medium text-gray-500 mb-1 text-center">MARITIME OBSERVER STATUS</p>
+                
+                <div className="flex justify-center gap-1 mb-1">
+                  {renderStars(user.score)}
+                </div>
+                
+                {user.score > 0 ? (
+                  <p className="text-sm text-center font-medium text-gray-700 mt-1">
+                    {user.score >= 5 ? 
+                      "Maritime Security Specialist" : 
+                      user.score >= 3 ? 
+                        "Verified Coastal Monitor" : 
+                        "Qualified Maritime Observer"}
+                  </p>
+                ) : (
+                  <p className="text-xs text-center text-gray-500 mt-1">
+                    Submit your first report to establish credentials
+                  </p>
+                )}
+              </div>
+            )}
+            
+            {/* User info and logout */}
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Logged in as</p>
+                <p className="text-sm font-semibold">{user?.name}</p>
+              </div>
+              <button
+                onClick={onLogout}
+                className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            </div>
+          </div>
         </form>
       )}
     </div>
