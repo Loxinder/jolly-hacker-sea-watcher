@@ -1,0 +1,3 @@
+[submodule "position-api"]
+	path = position-api
+	url = https://github.com/transparency-everywhere/position-api/
