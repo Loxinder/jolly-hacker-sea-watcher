@@ -341,7 +341,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>{t("note")}</strong>: {t("eitherImageOrLocationRequired")}
+              <strong>{t("note")}</strong>
             </p>
           </div>
 
