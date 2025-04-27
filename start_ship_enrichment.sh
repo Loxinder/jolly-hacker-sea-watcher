@@ -55,7 +55,15 @@ check_temporal_cli() {
 # Function to check if port is available
 check_port_available() {
     local port=$1
-    if command_exists lsof; then
+    local service_name=$2
+    
+    # Try to create a test socket
+    if command_exists nc; then
+        if nc -z localhost $port 2>/dev/null; then
+            echo -e "${RED}Port $port is already in use.${NC}"
+            return 1
+        fi
+    elif command_exists lsof; then
         if lsof -i:$port > /dev/null 2>&1; then
             echo -e "${RED}Port $port is already in use.${NC}"
             return 1
@@ -66,7 +74,22 @@ check_port_available() {
             return 1
         fi
     else
-        echo -e "${YELLOW}Cannot check if port $port is available. Proceeding anyway.${NC}"
+        echo -e "${YELLOW}Warning: No port checking tools available (nc, lsof, or netstat).${NC}"
+        echo -e "${YELLOW}Proceeding with $service_name startup, but it may fail if port $port is in use.${NC}"
+    fi
+    
+    # Additional check for TIME_WAIT state
+    if command_exists ss; then
+        if ss -tuln | grep -q ":$port "; then
+            echo -e "${YELLOW}Port $port appears to be in TIME_WAIT state.${NC}"
+            echo -e "${YELLOW}Waiting 5 seconds for the port to be released...${NC}"
+            sleep 5
+            # Check again after waiting
+            if ss -tuln | grep -q ":$port "; then
+                echo -e "${RED}Port $port is still in use after waiting.${NC}"
+                return 1
+            fi
+        fi
     fi
     
     return 0
@@ -102,7 +125,7 @@ start_temporal_server() {
     echo -e "${BLUE}Starting Temporal server...${NC}"
     
     # Check if port is available
-    if ! check_port_available 7234; then
+    if ! check_port_available 7234 "Temporal server"; then
         echo -e "${YELLOW}Temporal server might already be running.${NC}"
         return
     fi
@@ -133,7 +156,7 @@ start_ais_mock_server() {
     echo -e "${BLUE}Starting AIS mock server...${NC}"
     
     # Check if port is available
-    if ! check_port_available 8000; then
+    if ! check_port_available 8000 "AIS mock server"; then
         echo -e "${YELLOW}AIS mock server might already be running.${NC}"
         return
     fi
@@ -209,7 +232,7 @@ start_main_server() {
     echo -e "${BLUE}Starting main server...${NC}"
     
     # Check if port is available
-    if ! check_port_available 8001; then
+    if ! check_port_available 8001 "Main server"; then
         echo -e "${YELLOW}Main server might already be running.${NC}"
         return
     fi
