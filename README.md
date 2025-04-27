@@ -1,4 +1,5 @@
 # jolly-hacker-sea-watcher
+![static_media](/static_media/sea_watch-logo.png)
 
 ## Sighting Enrichment System
 
