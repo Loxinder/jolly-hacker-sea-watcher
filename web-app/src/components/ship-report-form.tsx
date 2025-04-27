@@ -6,67 +6,35 @@ import { useState, useRef, useEffect } from "react"
 import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut, Star } from "lucide-react"
 
 // Default API endpoint with fallback
-const API_ENDPOINT = process.env.SUBMIT_SHIP_ENDPOINT || '/api/submit_ship';
+const API_ENDPOINT = process.env.SUBMIT_SHIP_ENDPOINT || 'http://localhost:8001/submit_ship';
 
 // Add activity types interface
 const ACTIVITY_TYPES = [
-  { id: 'trespassing', labelKey: 'territorialWatersTrespassing' },
-  { id: 'fishing', labelKey: 'illegalFishing' },
-  { id: 'pirating', labelKey: 'piratingActivity' },
-  { id: 'smuggling', labelKey: 'suspectedSmuggling' },
-  { id: 'environmental', labelKey: 'environmentalViolation' },
-  { id: 'other', labelKey: 'otherSuspiciousActivity' },
+  { id: 'trespassing', label: 'Territorial Waters Trespassing' },
+  { id: 'fishing', label: 'Illegal Fishing' },
+  { id: 'pirating', label: 'Pirating Activity' },
+  { id: 'smuggling', label: 'Suspected Smuggling' },
+  { id: 'environmental', label: 'Environmental Violation' },
+  { id: 'other', label: 'Other Suspicious Activity' },
 ] as const;
 
 // Add vessel headings interface
 const VESSEL_HEADINGS = [
-  { id: 'N', labelKey: 'north' },
-  { id: 'E', labelKey: 'east' },
-  { id: 'S', labelKey: 'south' },
-  { id: 'W', labelKey: 'west' },
-  { id: 'docked', labelKey: 'docked' },
-  { id: 'stationary', labelKey: 'stationary' },
-  { id: 'unknown', labelKey: 'unknown' },
-] as const;
-
-// Add vessel registry flags
-const VESSEL_REGISTRY_FLAGS = [
-  { code: '🇺🇸', nameKey: 'United States' },
-  { code: '🇬🇧', nameKey: 'United Kingdom' },
-  { code: '🇨🇦', nameKey: 'Canada' },
-  { code: '🇦🇺', nameKey: 'Australia' },
-  { code: '🇳🇿', nameKey: 'New Zealand' },
-  { code: '🇯🇵', nameKey: 'Japan' },
-  { code: '🇨🇳', nameKey: 'China' },
-  { code: '🇷🇺', nameKey: 'Russia' },
-  { code: '🇮🇳', nameKey: 'India' },
-  { code: '🇧🇷', nameKey: 'Brazil' },
-  { code: '🇵🇦', nameKey: 'Panama' },
-  { code: '🇱🇷', nameKey: 'Liberia' },
-  { code: '🇲🇭', nameKey: 'Marshall Islands' },
-  { code: '🇸🇬', nameKey: 'Singapore' },
-  { code: '🇳🇴', nameKey: 'Norway' },
-  { code: '🇬🇷', nameKey: 'Greece' },
-  { code: '🇲🇹', nameKey: 'Malta' },
-  { code: '🇨🇾', nameKey: 'Cyprus' },
-  { code: '🇮🇹', nameKey: 'Italy' },
-  { code: '🇫🇷', nameKey: 'France' },
-  { code: '🇩🇪', nameKey: 'Germany' },
-  { code: '🇳🇱', nameKey: 'Netherlands' },
-  { code: '🇪🇸', nameKey: 'Spain' },
-  { code: '🇵🇹', nameKey: 'Portugal' },
-  { code: '🇩🇰', nameKey: 'Denmark' },
-  { code: '🇸🇪', nameKey: 'Sweden' },
-  { code: '🇫🇮', nameKey: 'Finland' },
+  { id: 'N', label: 'North' },
+  { id: 'E', label: 'East' },
+  { id: 'S', label: 'South' },
+  { id: 'W', label: 'West' },
+  { id: 'docked', label: 'Docked' },
+  { id: 'stationary', label: 'Stationary' },
+  { id: 'unknown', label: 'Unknown' },
 ] as const;
 
 interface ShipReportFormProps {
   user: { id: string; name: string; score: number } | null
   onLogout: () => void
-  t: any
 }
 
-export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProps) {
+export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) {
   const [description, setDescription] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -78,7 +46,6 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
   const [isCameraActive, setIsCameraActive] = useState(false)
   const [activityType, setActivityType] = useState<string>('')
   const [vesselHeading, setVesselHeading] = useState<string>('')
-  const [vesselRegistry, setVesselRegistry] = useState<string>('')
   const [formError, setFormError] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -105,7 +72,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
     setLocationError(null)
 
     if (!navigator.geolocation) {
-      setLocationError(t("geolocationNotSupported"))
+      setLocationError("Geolocation is not supported by your browser")
       setIsGettingLocation(false)
       return
     }
@@ -119,7 +86,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
         setIsGettingLocation(false)
       },
       (error) => {
-        setLocationError(t("errorGettingLocation", { error: error.message }))
+        setLocationError(`Error getting location: ${error.message}`)
         setIsGettingLocation(false)
       },
     )
@@ -138,7 +105,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
       }
     } catch (err) {
       console.error("Error accessing camera:", err)
-      alert(t("cameraAccessError"))
+      alert("Could not access the camera. Please check your permissions.")
     }
   }
 
@@ -188,7 +155,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
     // Check if either image or location is provided
     if (!image && !location) {
-      setFormError(t("eitherImageOrLocationRequired"))
+      setFormError("Either an image or location is required to submit a report")
       setIsSubmitting(false)
       return
     }
@@ -213,7 +180,6 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
         description: description || undefined,
         activity_type: activityType || undefined,
         vessel_heading: vesselHeading || undefined,
-        vessel_registry: vesselRegistry || undefined,
       };
       
       console.log("Sending payload to API:", apiPayload);
@@ -243,13 +209,12 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
         setDescription("")
         setImage(null)
         setImagePreview(null)
-        setVesselRegistry("")
         setIsSuccess(false)
       }, 3000)
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false)
-      alert(t("failedToSubmitReport"))
+      alert("Failed to submit report. Please try again.");
     }
   }
 
@@ -309,9 +274,9 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <Check className="h-4 w-4 text-green-600" />
-            <h4 className="font-medium">{t("success")}</h4>
+            <h4 className="font-medium">Success!</h4>
           </div>
-          <p className="text-sm mt-1">{t("reportSubmittedSuccessfully")}</p>
+          <p className="text-sm mt-1">Your ship report has been submitted successfully.</p>
         </div>
       ) : isCameraActive ? (
         <div className="space-y-4">
@@ -326,14 +291,14 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
               className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2"
             >
               <Camera className="h-4 w-4" />
-              {t("takePhoto")}
+              Take Photo
             </button>
             <button
               type="button"
               onClick={stopCamera}
               className="flex-1 border px-4 py-2 rounded-md hover:bg-gray-50"
             >
-              {t("cancel")}
+              Cancel
             </button>
           </div>
         </div>
@@ -341,14 +306,12 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>{t("note")}</strong>: {t("eitherImageOrLocationRequired")}
+              <strong>Note:</strong> Either an image or location is required to submit a report. Other fields are optional.
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-label">
-              {t("sendImage")}
-            </label>
+            <label className="block text-sm font-medium">Send Image</label>
             {imagePreview ? (
               <div className="border rounded-md p-2">
                 <img
@@ -366,14 +329,14 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
                       if (fileInputRef.current) fileInputRef.current.value = ""
                     }}
                   >
-                    {t("remove")}
+                    Remove
                   </button>
                   <button
                     type="button"
                     className="flex-1 px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    {t("change")}
+                    Change
                   </button>
                 </div>
               </div>
@@ -385,7 +348,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload className="h-4 w-4" />
-                  {t("uploadImage")}
+                  Upload Image
                 </button>
                 <button
                   type="button"
@@ -393,7 +356,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
                   onClick={startCamera}
                 >
                   <Camera className="h-4 w-4" />
-                  {t("takePhoto")}
+                  Take Photo
                 </button>
                 <input
                   ref={fileInputRef}
@@ -407,9 +370,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-label">
-              {t("sendLocation")}
-            </label>
+            <label className="block text-sm font-medium">Send Location</label>
             {location ? (
               <div className="p-3 bg-gray-100 rounded-md">
                 <div className="flex items-center text-sm">
@@ -427,7 +388,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
                 disabled={isGettingLocation}
               >
                 <MapPin className="h-4 w-4" />
-                {isGettingLocation ? t("gettingLocation") : t("getCurrentLocation")}
+                {isGettingLocation ? "Getting location..." : "Get Current Location"}
               </button>
             )}
 
@@ -435,7 +396,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-red-600" />
-                  <h4 className="font-medium">{t("error")}</h4>
+                  <h4 className="font-medium">Error</h4>
                 </div>
                 <p className="text-sm mt-1">{locationError}</p>
               </div>
@@ -444,8 +405,8 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Activity Type Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="activityType" className="block text-sm font-medium text-label">
-              {t("activityType")}
+            <label htmlFor="activityType" className="block text-sm font-medium">
+              Activity Type
             </label>
             <select
               id="activityType"
@@ -453,10 +414,10 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
               onChange={(e) => setActivityType(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
-              <option value="">{t("selectActivityType")}</option>
+              <option value="">Select activity type...</option>
               {ACTIVITY_TYPES.map(type => (
                 <option key={type.id} value={type.id}>
-                  {t(type.labelKey)}
+                  {type.label}
                 </option>
               ))}
             </select>
@@ -464,8 +425,8 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Vessel Heading Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="vesselHeading" className="block text-sm font-medium text-label">
-              {t("vesselHeading")}
+            <label htmlFor="vesselHeading" className="block text-sm font-medium">
+              Vessel Heading
             </label>
             <select
               id="vesselHeading"
@@ -473,30 +434,10 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
               onChange={(e) => setVesselHeading(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
-              <option value="">{t("selectVesselHeading")}</option>
+              <option value="">Select vessel heading...</option>
               {VESSEL_HEADINGS.map(heading => (
                 <option key={heading.id} value={heading.id}>
-                  {t(heading.labelKey)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Vessel Registry Flag Dropdown */}
-          <div className="space-y-1">
-            <label htmlFor="vesselRegistry" className="block text-sm font-medium text-label">
-              {t("vesselRegistryFlag")}
-            </label>
-            <select
-              id="vesselRegistry"
-              value={vesselRegistry}
-              onChange={(e) => setVesselRegistry(e.target.value)}
-              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-            >
-              <option value="">{t("selectRegistryFlag")}</option>
-              {VESSEL_REGISTRY_FLAGS.map(flag => (
-                <option key={flag.code} value={flag.code}>
-                  {flag.code} {t(flag.nameKey)}
+                  {heading.label}
                 </option>
               ))}
             </select>
@@ -504,37 +445,35 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Details textarea now comes after activity type */}
           <div className="space-y-1">
-            <label htmlFor="description" className="block text-sm font-medium text-label" style={{ color: 'var(--label-color)', opacity: 1 }}>
-              {t("provideDetails")}
+            <label htmlFor="description" className="block text-sm font-medium">
+              Provide Details
             </label>
             <textarea
               id="description"
-              className="w-full rounded-md border border-custom px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
-              placeholder={t("describeShip")}
+              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Describe the ship you saw..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              style={{ color: 'var(--input-text)', background: 'var(--input-bg)' }}
             />
           </div>
 
           <button
             type="submit"
             disabled={isSubmitting || (!image && !location)}
-            className="w-full px-4 py-2 rounded-md transition-colors bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ color: isSubmitting || (!image && !location) ? '#a1a1aa' : 'var(--button-text)', background: isSubmitting || (!image && !location) ? '#e5e7eb' : 'var(--button-bg)' }}
+            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Ship className="h-4 w-4" />
-            {isSubmitting ? t("submitting") : t("submitReport")}
+            {isSubmitting ? "Submitting..." : "Submit Report"}
           </button>
 
           {formError && (
-            <div className="bg-error border border-custom rounded-lg p-4 mt-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-2">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-error" />
-                <h4 className="font-medium text-error">{t("error")}</h4>
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <h4 className="font-medium">Error</h4>
               </div>
-              <p className="text-sm mt-1 text-error">{formError}</p>
+              <p className="text-sm mt-1">{formError}</p>
             </div>
           )}
 
@@ -542,34 +481,34 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-yellow-600" />
-                <h4 className="font-medium">{t("guestMode")}</h4>
+                <h4 className="font-medium">Guest Mode</h4>
               </div>
-              <p className="text-sm mt-1">{t("reportingAsGuest")}</p>
+              <p className="text-sm mt-1">You're reporting as a guest. Your report will be anonymous.</p>
             </div>
           )}
 
           {/* Maritime Observer Status and User Info */}
-          <div className="mt-8 pt-4 border-t border-custom">
+          <div className="mt-8 pt-4 border-t">
             {/* Observer Status */}
             {user && (
-              <div className="mb-4 bg-gradient-to-b from-blue-50 to-white dark:from-blue-900 dark:to-secondary p-4 rounded-lg border border-blue-100 dark:border-blue-900">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1 text-center">{t("maritimeObserverStatus")}</p>
+              <div className="mb-4 bg-gradient-to-b from-blue-50 to-white p-4 rounded-lg border border-blue-100">
+                <p className="text-sm font-medium text-gray-500 mb-1 text-center">MARITIME OBSERVER STATUS</p>
                 
                 <div className="flex justify-center gap-1 mb-1">
                   {renderStars(user.score)}
                 </div>
                 
                 {user.score > 0 ? (
-                  <p className="text-sm text-center font-medium text-gray-700 dark:text-gray-100 mt-1">
+                  <p className="text-sm text-center font-medium text-gray-700 mt-1">
                     {user.score >= 5 ? 
-                      t("maritimeSecuritySpecialist") : 
+                      "Maritime Security Specialist" : 
                       user.score >= 3 ? 
-                        t("verifiedCoastalMonitor") : 
-                        t("qualifiedMaritimeObserver")}
+                        "Verified Coastal Monitor" : 
+                        "Qualified Maritime Observer"}
                   </p>
                 ) : (
-                  <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
-                    {t("establishCredentials")}
+                  <p className="text-xs text-center text-gray-500 mt-1">
+                    Submit your first report to establish credentials
                   </p>
                 )}
               </div>
@@ -578,15 +517,15 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
             {/* User info and logout */}
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-foreground opacity-70">{t("loggedInAs")}</p>
-                <p className="text-sm font-semibold text-foreground">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-500">Logged in as</p>
+                <p className="text-sm font-semibold">{user?.name}</p>
               </div>
               <button
                 onClick={onLogout}
-                className="px-3 py-1.5 text-sm border border-custom rounded-md hover:bg-secondary transition-colors flex items-center gap-2"
+                className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
               >
                 <LogOut className="h-4 w-4" />
-                {t("logout")}
+                Logout
               </button>
             </div>
           </div>
