@@ -41,12 +41,12 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="space-y-2">
-        <label htmlFor="username" className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+        <label htmlFor="username" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
           Username
         </label>
         <input
           id="username"
-          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
           placeholder="Enter your username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -54,13 +54,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="password" className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+        <label htmlFor="password" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
           Password
         </label>
         <input
           id="password"
           type="password"
-          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

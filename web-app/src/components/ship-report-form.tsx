@@ -345,7 +345,9 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Send Image</label>
+            <label className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+              Send Image
+            </label>
             {imagePreview ? (
               <div className="border rounded-md p-2">
                 <img
@@ -404,7 +406,9 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Send Location</label>
+            <label className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+              Send Location
+            </label>
             {location ? (
               <div className="p-3 bg-gray-100 rounded-md">
                 <div className="flex items-center text-sm">
@@ -439,7 +443,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
           {/* Activity Type Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="activityType" className="block text-sm font-medium">
+            <label htmlFor="activityType" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
               Activity Type
             </label>
             <select
@@ -459,7 +463,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
           {/* Vessel Heading Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="vesselHeading" className="block text-sm font-medium">
+            <label htmlFor="vesselHeading" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
               Vessel Heading
             </label>
             <select
@@ -479,7 +483,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
           {/* Vessel Registry Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="vesselRegistry" className="block text-sm font-medium">
+            <label htmlFor="vesselRegistry" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
               Vessel Registry Flag (Optional)
             </label>
             <select
@@ -499,12 +503,12 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
           {/* Details textarea now comes after activity type */}
           <div className="space-y-1">
-            <label htmlFor="description" className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+            <label htmlFor="description" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
               Provide Details
             </label>
             <textarea
               id="description"
-              className="w-full rounded-md border border-custom px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              className="w-full rounded-md border border-custom px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
               placeholder="Describe the ship you saw..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -571,8 +575,8 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             {/* User info and logout */}
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Logged in as</p>
-                <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>{user?.name}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-300" style={{ color: 'var(--foreground)', opacity: 1 }}>Logged in as</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--foreground)', opacity: 1 }}>{user?.name}</p>
               </div>
               <button
                 onClick={onLogout}
