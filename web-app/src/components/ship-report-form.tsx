@@ -5,6 +5,9 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut, Star } from "lucide-react"
 
+// Default API endpoint with fallback
+const API_ENDPOINT = process.env.SUBMIT_SHIP_ENDPOINT || 'http://localhost:8001/submit_ship';
+
 // Add activity types interface
 const ACTIVITY_TYPES = [
   { id: 'trespassing', label: 'Territorial Waters Trespassing' },
@@ -43,6 +46,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
   const [isCameraActive, setIsCameraActive] = useState(false)
   const [activityType, setActivityType] = useState<string>('')
   const [vesselHeading, setVesselHeading] = useState<string>('')
+  const [formError, setFormError] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -147,35 +151,56 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setFormError(null)
 
-    // Prepare data to send to your backend
-    const formData = new FormData()
-    if (image) formData.append("image", image)
-    formData.append("description", description)
-    formData.append("activityType", activityType)
-    formData.append("vesselHeading", vesselHeading)
-
-    if (location) {
-      formData.append("latitude", location.latitude.toString())
-      formData.append("longitude", location.longitude.toString())
+    // Check if either image or location is provided
+    if (!image && !location) {
+      setFormError("Either an image or location is required to submit a report")
+      setIsSubmitting(false)
+      return
     }
 
-    if (user) {
-      formData.append("userId", user.id)
-      formData.append("userName", user.name)
-      formData.append("userScore", user.score.toString())
-    }
+    try {
+      // Create a timestamp 
+      const timestamp = new Date().toISOString();
+      
+      // Convert image to base64 if available
+      let base64Image = null;
+      if (image) {
+        base64Image = await convertImageToBase64(image);
+      }
+      
+      // Prepare the API payload according to the required structure
+      const apiPayload = {
+        source_account_id: user?.id || "anonymous",
+        timestamp: timestamp,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        picture_url: base64Image, // Using base64 image data
+        description: description || undefined,
+        activity_type: activityType || undefined,
+        vessel_heading: vesselHeading || undefined,
+      };
+      
+      console.log("Sending payload to API:", apiPayload);
+      
+      // Send the API request
+      const response = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(apiPayload),
+      });
 
-    // Log the data that would be sent to your backend
-    console.log("Data to send:", {
-      description,
-      image: image ? image.name : null,
-      location,
-      user: user ? { id: user.id, name: user.name, score: user.score } : null,
-    })
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
 
-    // Simulate API call
-    setTimeout(() => {
+      const data = await response.json();
+      console.log("API response:", data);
+
+      // On success
       setIsSubmitting(false)
       setIsSuccess(true)
 
@@ -186,8 +211,30 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         setImagePreview(null)
         setIsSuccess(false)
       }, 3000)
-    }, 1500)
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setIsSubmitting(false)
+      alert("Failed to submit report. Please try again.");
+    }
   }
+
+  // Helper function to convert an image file to a base64 string
+  const convertImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          resolve(reader.result);
+        } else {
+          reject(new Error('Failed to convert image to base64'));
+        }
+      };
+      reader.onerror = () => {
+        reject(new Error('Failed to read image file'));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   // Function to render stars based on score
   const renderStars = (score: number) => {
@@ -257,6 +304,12 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> Either an image or location is required to submit a report. Other fields are optional.
+            </p>
+          </div>
+
           <div className="space-y-2">
             <label className="block text-sm font-medium">Send Image</label>
             {imagePreview ? (
@@ -413,6 +466,16 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             <Ship className="h-4 w-4" />
             {isSubmitting ? "Submitting..." : "Submit Report"}
           </button>
+
+          {formError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <h4 className="font-medium">Error</h4>
+              </div>
+              <p className="text-sm mt-1">{formError}</p>
+            </div>
+          )}
 
           {user?.id === "guest" && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
