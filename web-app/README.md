@@ -34,3 +34,32 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Environment Variables
+
+The application uses the following environment variables:
+
+- `NEXT_PUBLIC_API_ENDPOINT`: The endpoint URL for submitting ship reports (default: http://localhost:8001/submit_ship)
+
+You can set these variables in a `.env.local` file:
+
+```bash
+NEXT_PUBLIC_API_ENDPOINT=http://localhost:8001/submit_ship
+```
+
+## API Integration
+
+The application sends ship reports to an API endpoint with the following JSON structure:
+
+```json
+{
+  "source_account_id": "user-id",
+  "timestamp": "2024-04-27T00:00:00Z",
+  "latitude": 37.7749,
+  "longitude": -122.4194,
+  "picture_url": "base64-encoded-image-or-url",
+  "description": "Optional description",
+  "activity_type": "Optional activity type",
+  "vessel_heading": "Optional vessel heading"
+}
+```
