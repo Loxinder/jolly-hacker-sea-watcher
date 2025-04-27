@@ -57,17 +57,17 @@ async def root():
 @app.on_event("startup")
 async def startup_event():
     global temporal_client
-    api_key = os.getenv('TEMPORAL_API_KEY')
+    temporal_api_key = os.getenv('TEMPORAL_API_KEY')
     endpoint = os.getenv('TEMPORAL_ENDPOINT', '127.0.0.1:7234')
     namespace = os.getenv('TEMPORAL_NAMESPACE', 'default')
 
     logger.info(f"Connecting to Temporal server at {endpoint}...")
-    if api_key:
+    if temporal_api_key:
         logger.info("Using cloud Temporal endpoint")
         temporal_client = await Client.connect(
             endpoint,
             tls=True,
-            api_key=api_key,
+            api_key=temporal_api_key,
             namespace=namespace
         )
     else:
