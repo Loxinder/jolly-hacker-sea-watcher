@@ -1,3 +1,4 @@
+backend/gpt_integration/.env
 # Python
 __pycache__/
 *.py[cod]
@@ -39,4 +40,4 @@ temporals/base/.venv/
 temporals/base/__pycache__/
 *.log
 *.pid
-*.port 
+*.port
