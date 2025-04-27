@@ -29,6 +29,37 @@ const VESSEL_HEADINGS = [
   { id: 'unknown', label: 'Unknown' },
 ] as const;
 
+// Add vessel registry flags
+const VESSEL_REGISTRY_FLAGS = [
+  { code: '🇺🇸', name: 'United States' },
+  { code: '🇬🇧', name: 'United Kingdom' },
+  { code: '🇨🇦', name: 'Canada' },
+  { code: '🇦🇺', name: 'Australia' },
+  { code: '🇳🇿', name: 'New Zealand' },
+  { code: '🇯🇵', name: 'Japan' },
+  { code: '🇨🇳', name: 'China' },
+  { code: '🇷🇺', name: 'Russia' },
+  { code: '🇮🇳', name: 'India' },
+  { code: '🇧🇷', name: 'Brazil' },
+  { code: '🇵🇦', name: 'Panama' },
+  { code: '🇱🇷', name: 'Liberia' },
+  { code: '🇲🇭', name: 'Marshall Islands' },
+  { code: '🇸🇬', name: 'Singapore' },
+  { code: '🇳🇴', name: 'Norway' },
+  { code: '🇬🇷', name: 'Greece' },
+  { code: '🇲🇹', name: 'Malta' },
+  { code: '🇨🇾', name: 'Cyprus' },
+  { code: '🇮🇹', name: 'Italy' },
+  { code: '🇫🇷', name: 'France' },
+  { code: '🇩🇪', name: 'Germany' },
+  { code: '🇳🇱', name: 'Netherlands' },
+  { code: '🇪🇸', name: 'Spain' },
+  { code: '🇵🇹', name: 'Portugal' },
+  { code: '🇩🇰', name: 'Denmark' },
+  { code: '🇸🇪', name: 'Sweden' },
+  { code: '🇫🇮', name: 'Finland' },
+] as const;
+
 interface ShipReportFormProps {
   user: { id: string; name: string; score: number } | null
   onLogout: () => void
@@ -46,6 +77,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
   const [isCameraActive, setIsCameraActive] = useState(false)
   const [activityType, setActivityType] = useState<string>('')
   const [vesselHeading, setVesselHeading] = useState<string>('')
+  const [vesselRegistry, setVesselRegistry] = useState<string>('')
   const [formError, setFormError] = useState<string | null>(null)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -180,6 +212,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         description: description || undefined,
         activity_type: activityType || undefined,
         vessel_heading: vesselHeading || undefined,
+        vessel_registry: vesselRegistry || undefined,
       };
       
       console.log("Sending payload to API:", apiPayload);
@@ -209,6 +242,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         setDescription("")
         setImage(null)
         setImagePreview(null)
+        setVesselRegistry("")
         setIsSuccess(false)
       }, 3000)
     } catch (error) {
@@ -438,6 +472,26 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               {VESSEL_HEADINGS.map(heading => (
                 <option key={heading.id} value={heading.id}>
                   {heading.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Vessel Registry Dropdown */}
+          <div className="space-y-1">
+            <label htmlFor="vesselRegistry" className="block text-sm font-medium">
+              Vessel Registry Flag (Optional)
+            </label>
+            <select
+              id="vesselRegistry"
+              value={vesselRegistry}
+              onChange={(e) => setVesselRegistry(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">Select vessel registry...</option>
+              {VESSEL_REGISTRY_FLAGS.map(flag => (
+                <option key={flag.code} value={flag.code}>
+                  {flag.code} {flag.name}
                 </option>
               ))}
             </select>

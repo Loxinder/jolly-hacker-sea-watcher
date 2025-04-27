@@ -8,6 +8,7 @@ class ReportDetails(BaseModel):
     latitude: float
     longitude: float
     picture_url: str
+    vessel_registry: Optional[str] = None
 
 class EnrichedReportDetails(ReportDetails):
     report_number: Optional[str] = None
