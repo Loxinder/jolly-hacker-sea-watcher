@@ -1,13 +1,28 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import LoginForm from "@/components/login-form"
 import ShipReportForm from "@/components/ship-report-form"
 import '../i18n';
 import { useTranslation } from 'react-i18next';
-import languageNames from '../locales/languageNames';
 
 const supportedLngs = ['en', 'es', 'ar', 'zh', 'pt', 'uk', 'pl', 'tl', 'vi', 'th', 'tw', 'ja', 'id'];
+
+const languageNames: Record<string, string> = {
+  en: 'English',
+  es: 'Español',
+  ar: 'العربية',
+  zh: '中文',
+  pt: 'Português',
+  uk: 'Українська',
+  pl: 'Polski',
+  tl: 'Tagalog',
+  vi: 'Tiếng Việt',
+  th: 'ไทย',
+  tw: '繁體中文',
+  ja: '日本語',
+  id: 'Bahasa Indonesia',
+};
 
 function detectBrowserLanguage() {
   if (typeof window !== 'undefined') {
@@ -21,13 +36,12 @@ function detectBrowserLanguage() {
 
 export default function Home() {
   const { t, i18n } = useTranslation();
-  const [language, setLanguage] = useState(() => detectBrowserLanguage());
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<{ id: string; name: string; score: number } | null>(null)
 
-  useEffect(() => {
-    i18n.changeLanguage(language);
-  }, [language, i18n]);
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    i18n.changeLanguage(e.target.value);
+  };
 
   const languages = [
     { code: 'en', label: languageNames['en'] },
@@ -56,12 +70,8 @@ export default function Home() {
       <div className="w-full max-w-md bg-white dark:bg-secondary rounded-lg border border-custom shadow-sm transition-colors">
         <div className="p-6">
           <select
-            value={language}
-            onChange={e => {
-              const newLang = e.target.value;
-              i18n.changeLanguage(newLang);
-              setLanguage(newLang);
-            }}
+            value={i18n.language}
+            onChange={handleLanguageChange}
             className="mb-4 px-4 py-2 rounded bg-blue-200 hover:bg-blue-300"
             style={{ width: 180 }}
           >
