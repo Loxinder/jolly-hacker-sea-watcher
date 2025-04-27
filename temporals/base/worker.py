@@ -29,7 +29,8 @@ if openai_api_key:
 else:
     logger.error("OpenAI API key is not loaded")
 
-    logger.info(f"Connecting to Temporal server at {endpoint}...")
+async def run_worker():
+    logger.info("Connecting to Temporal server...")
     if temporal_api_key:
         logger.info("Using cloud Temporal endpoint")
         client = await Client.connect(
@@ -42,10 +43,6 @@ else:
         logger.info("Using local Temporal endpoint")
         client = await Client.connect(endpoint)
 
-
-async def run_worker():
-    logger.info("Connecting to Temporal server...")
-    client = await Client.connect("127.0.0.1:7234")
     logger.info("Connected to Temporal server")
 
     logger.info("Starting worker...")
