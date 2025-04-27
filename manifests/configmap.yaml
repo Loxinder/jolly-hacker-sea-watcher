@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: temporal-worker-config
+  namespace: temporal
+data:
+  TEMPORAL_ENDPOINT: "us-west-2.aws.api.temporal.io:7233"
+  TEMPORAL_NAMESPACE: "national-hackathon.v37zq"
+  TEMPORAL_TASK_QUEUE: "ship-processing"
+  PYTHONUNBUFFERED: "1" 

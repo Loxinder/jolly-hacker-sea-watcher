@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-worker
+  namespace: temporal
+  labels:
+    app: temporal-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-worker
+  template:
+    metadata:
+      labels:
+        app: temporal-worker
+    spec:
+      containers:
+      - name: temporal-worker
+        image: ksiadz/temporal-worker:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: temporal-worker-config
+        - secretRef:
+            name: temporal-worker-secrets
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          exec:
+            command:
+            - python3
+            - -c
+            - "import temporalio; print('OK')"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - python3
+            - -c
+            - "import temporalio; print('OK')"
+          initialDelaySeconds: 5
+          periodSeconds: 10 
