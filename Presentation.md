@@ -18,3 +18,9 @@ China has used economic warfare via its Belt and Road Initiative (BRI) globally,
 ## Solution
 
 The solution built here is crowdsourcing the reporting of malign maritime activities and increasing the availability and transparency of these reports, while enriching reported data with known PAI/CAI sources. This approach empowers affected populations and authorities to take actions they deem appropriate, based on timely, enriched, and actionable intelligence.
+
+## Transition
+
+Now, let's see how this vision comes to life: we'll explore the platform by browsing and searching real maritime data. You can view multiple ships on the map, select any vessel to reveal detailed information—including reported locations and activities—and instantly share a link to that vessel with others.
+
+[Demo.md](/Demo.md)
