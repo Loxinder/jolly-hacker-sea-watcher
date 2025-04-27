@@ -323,8 +323,7 @@ main() {
     echo -e "  - Temporal Server:         http://localhost:7234"
     echo -e "  - Temporal Web UI:         http://localhost:8233"
     echo -e "  - AIS Mock Server (API):   http://localhost:8000"
-    echo -e "  - Main Server (Web UI):    http://l{{ ... }}
-    # --- API Endpoint Definition ---
+    echo -e "  - Main Server (Web UI):    http://localhost:8001  ${GREEN}<-- Web UI${NC}"
     
     @app.get("/")
     def root():
