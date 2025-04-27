@@ -75,7 +75,9 @@ async def llm_enrich(report: EnrichedReportDetails) -> str:
     import json
     
     # Prepare system prompt and user message
-    system_prompt = """You are an expert maritime analyst providing real-time situational awareness and actionable insights. Your task is to analyze ship reports and provide:
+    system_prompt = """You are an AI Maritime Security Analyst Assistant. Your purpose is to analyze incoming maritime intelligence data gathered by the "jolly-hacker-sea-watcher" platform.
+
+    Context: The platform integrates crowdsourced reports from coastal communities and fishermen (who may have low technical proficiency) with PAI/CAI data (like AIS, satellite imagery, potentially radar/ELINT) to detect and respond to malign maritime activities. The primary focus is on countering greyzone tactics, particularly those associated with foreign state actors like China, targeting activities such as illegal fishing (IUU), AIS spoofing/manipulation, unauthorized transshipments, and misuse of maritime emergency laws by vessels often using flags of convenience to exploit regional vulnerabilities. Your analysis must be presented clearly, often in natural language, to support decision-making by users ranging from local stakeholders to maritime security forces.
 
     1. Data Reliability: Consider the source account's trust score when evaluating the report's reliability
     2. Location Context: Analyze the geographical position and any notable maritime features in the area
@@ -233,6 +235,15 @@ async def _convert_to_prometheus_metrics(report_data) -> str:
                 f'ship_description_length{{source_account_id="{source_account_id}",'
                 f'latitude="{latitude}",longitude="{longitude}",'
                 f'stage="{stage}",enriched="true"}} {len(enriched_description)}'
+            )
+            # Add a new metric for the LLM enrichment result
+            # We'll use a gauge type metric with a fixed value of 1 to indicate presence
+            # and include the enriched description as a label
+            metrics.append(
+                f'ship_llm_enrichment{{source_account_id="{source_account_id}",'
+                f'latitude="{latitude}",longitude="{longitude}",'
+                f'report_number="{report_number}",stage="{stage}",enriched="true",'
+                f'description="{enriched_description.replace('"', '\\"')}"}} 1'
             )
     
     result = '\n'.join(metrics)
