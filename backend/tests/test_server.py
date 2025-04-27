@@ -47,9 +47,9 @@ class TestServer(unittest.TestCase):
         )
         expected += '\n'.join([] + [])
         result = server.get_metrics()
-        # Since get_metrics is async, run it in an event loop
+        # Since get_metrics is async, run it with asyncio.run
         import asyncio
-        output = asyncio.get_event_loop().run_until_complete(result)
+        output = asyncio.run(result)
         self.assertEqual(output, expected)
 
     def test_get_metrics_with_data(self):
@@ -65,7 +65,7 @@ class TestServer(unittest.TestCase):
             expected += '\n'.join(['foo', 'bar'])
             result = server.get_metrics()
             import asyncio
-            output = asyncio.get_event_loop().run_until_complete(result)
+            output = asyncio.run(result)
             self.assertEqual(output, expected)
 
 if __name__ == "__main__":
