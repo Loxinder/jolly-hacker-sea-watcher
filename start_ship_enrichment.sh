@@ -294,6 +294,16 @@ stop_all() {
 # Trap Ctrl+C and call stop_all
 trap stop_all INT
 
+# Function to print usage information
+help() {
+    echo "Usage: $0 {start|stop|restart|-h|--help}"
+    echo "Commands:"
+    echo "  start     Start the Ship Enrichment System (default if no command)"
+    echo "  stop      Stop all running components"
+    echo "  restart   Restart all components"
+    echo "  -h, --help  Show this help message"
+}
+
 # Main function
 main() {
     echo -e "${BLUE}Starting Ship Enrichment System...${NC}"
@@ -309,7 +319,12 @@ main() {
     start_main_server
     
     echo -e "${GREEN}Ship Enrichment System started successfully.${NC}"
-    echo -e "${YELLOW}Press Ctrl+C to stop all components.${NC}"
+    echo -e "\n${YELLOW}Access the running services at the following URLs:${NC}"
+    echo -e "  - Temporal Server:         http://localhost:7234"
+    echo -e "  - Temporal Web UI:         http://localhost:8233"
+    echo -e "  - AIS Mock Server (API):   http://localhost:8000"
+    echo -e "  - Main Server (Web UI):    http://localhost:8001  ${GREEN}<-- Web UI${NC}"
+    echo -e "\n${YELLOW}Press Ctrl+C to stop all components.${NC}"
     
     # Keep script running until interrupted
     while true; do
@@ -319,7 +334,7 @@ main() {
 
 # Parse command-line arguments
 case "$1" in
-    start)
+    start|"")
         main
         ;;
     stop)
@@ -329,8 +344,12 @@ case "$1" in
         stop_all
         main
         ;;
+    -h|--help)
+        help
+        ;;
     *)
-        echo "Usage: $0 {start|stop|restart}"
+        echo "Unknown command: $1"
+        help
         exit 1
         ;;
 esac
