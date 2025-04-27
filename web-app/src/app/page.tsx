@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import LoginForm from "@/components/login-form"
 import ShipReportForm from "@/components/ship-report-form"
 import '../i18n';
@@ -38,6 +38,25 @@ export default function Home() {
   const { t, i18n } = useTranslation();
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<{ id: string; name: string; score: number } | null>(null)
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme, mounted]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     i18n.changeLanguage(e.target.value);
@@ -69,16 +88,29 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-24 bg-secondary transition-colors">
       <div className="w-full max-w-md bg-white dark:bg-secondary rounded-lg border border-custom shadow-sm transition-colors">
         <div className="p-6">
-          <select
-            value={i18n.language}
-            onChange={handleLanguageChange}
-            className="mb-4 px-4 py-2 rounded bg-blue-200 hover:bg-blue-300"
-            style={{ width: 180 }}
-          >
-            {languages.map(lang => (
-              <option key={lang.code} value={lang.code}>{lang.label}</option>
-            ))}
-          </select>
+          <div className="flex justify-between items-center mb-4">
+            <select
+              value={i18n.language}
+              onChange={handleLanguageChange}
+              className="px-4 py-2 rounded bg-blue-200 hover:bg-blue-300"
+              style={{ width: 180 }}
+            >
+              {languages.map(lang => (
+                <option key={lang.code} value={lang.code}>{lang.label}</option>
+              ))}
+            </select>
+            {mounted && (
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="ml-4 px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 transition-colors"
+                aria-label="Toggle dark/light mode"
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+              </button>
+            )}
+          </div>
           <h2 className="text-2xl font-semibold text-center mb-6" style={{ color: 'var(--foreground)', opacity: 1 }}>{t('reportShipActivity')}</h2>
           {isLoggedIn ? (
             <ShipReportForm

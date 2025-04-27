@@ -504,7 +504,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Details textarea now comes after activity type */}
           <div className="space-y-1">
-            <label htmlFor="description" className="block text-sm font-medium text-label">
+            <label htmlFor="description" className="block text-sm font-medium text-label" style={{ color: 'var(--label-color)', opacity: 1 }}>
               {t("provideDetails")}
             </label>
             <textarea
@@ -514,6 +514,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
+              style={{ color: 'var(--input-text)', background: 'var(--input-bg)' }}
             />
           </div>
 
@@ -521,6 +522,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
             type="submit"
             disabled={isSubmitting || (!image && !location)}
             className="w-full px-4 py-2 rounded-md transition-colors bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            style={{ color: isSubmitting || (!image && !location) ? '#a1a1aa' : 'var(--button-text)', background: isSubmitting || (!image && !location) ? '#e5e7eb' : 'var(--button-bg)' }}
           >
             <Ship className="h-4 w-4" />
             {isSubmitting ? t("submitting") : t("submitReport")}

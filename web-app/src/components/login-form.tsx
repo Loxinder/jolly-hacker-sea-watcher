@@ -42,32 +42,34 @@ export default function LoginForm({ onLogin, t }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="space-y-2">
-        <label htmlFor="username" className="block text-sm font-medium text-label">
+        <label htmlFor="username" className="block text-sm font-medium text-label" style={{ color: 'var(--label-color)', opacity: 1 }}>
           {t('username')}
         </label>
         <input
           id="username"
-          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
-          placeholder={t('enterUsername')}
+          type="text"
+          autoComplete="username"
+          className="w-full rounded-md border border-custom px-2 py-1.5 text-sm bg-[var(--input-bg)] text-[var(--input-text)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          style={{ color: 'var(--input-text)', background: 'var(--input-bg)' }}
           required
-          autoComplete="username"
         />
       </div>
-      <div className="space-y-2">
-        <label htmlFor="password" className="block text-sm font-medium text-label">
+      <div className="space-y-2 mt-4">
+        <label htmlFor="password" className="block text-sm font-medium text-label" style={{ color: 'var(--label-color)', opacity: 1 }}>
           {t('password')}
         </label>
         <input
           id="password"
           type="password"
-          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
-          placeholder={t('enterPassword')}
+          autoComplete="current-password"
+          className="w-full rounded-md border border-custom px-2 py-1.5 text-sm bg-[var(--input-bg)] text-[var(--input-text)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          placeholder={t('enterPassword')}
+          style={{ color: 'var(--input-text)', background: 'var(--input-bg)' }}
           required
-          autoComplete="current-password"
         />
       </div>
       <div className="flex flex-col space-y-2">

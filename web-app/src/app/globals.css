@@ -54,10 +54,25 @@ input, textarea, select {
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
+input:disabled, textarea:disabled, select:disabled {
+  background: var(--input-bg);
+  color: #a1a1aa; /* Use a gray color for disabled text for contrast */
+  opacity: 1;
+  border-color: var(--border);
+}
+
 button {
   background: var(--button-bg);
   color: var(--button-text);
   transition: background 0.2s, color 0.2s;
+}
+
+button:disabled {
+  background: #e5e7eb; /* Light gray background for disabled buttons */
+  color: #a1a1aa; /* Muted gray text for contrast */
+  opacity: 1;
+  cursor: not-allowed;
+  border-color: var(--border);
 }
 
 button:hover:not(:disabled) {
@@ -91,4 +106,29 @@ button:hover:not(:disabled) {
 /* Add specific styling for form labels */
 .text-label {
   color: var(--label-color);
+}
+
+::placeholder {
+  color: #6b7280; /* Tailwind gray-500 for placeholder text */
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  input:disabled, textarea:disabled, select:disabled {
+    background: var(--input-bg);
+    color: #6b7280; /* Lighter gray for disabled text in dark mode */
+    opacity: 1;
+    border-color: var(--border);
+  }
+  button:disabled {
+    background: #374151; /* Dark gray background for disabled buttons */
+    color: #6b7280; /* Lighter gray for disabled text */
+    opacity: 1;
+    cursor: not-allowed;
+    border-color: var(--border);
+  }
+  ::placeholder {
+    color: #9ca3af; /* Tailwind gray-400 for placeholder text in dark mode */
+    opacity: 1;
+  }
 }
