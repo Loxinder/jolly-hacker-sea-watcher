@@ -348,10 +348,6 @@ main() {
     echo -e "  - AIS Mock Server (API):   http://localhost:8000"
     echo -e "  - Main Server (Web UI):    http://localhost:8001  ${GREEN}<-- Web UI${NC}"
     
-    @app.get("/")
-    def root():
-        return {"status": "AIS mock server is running"}
-    {{ ... }}ocalhost:8001  ${GREEN}<-- Web UI${NC}"
     echo -e "\n${YELLOW}Press Ctrl+C to stop all components.${NC}"
     
     # Keep script running until interrupted
