@@ -1,0 +1,4 @@
+pandas       # For data manipulation (reading CSV, DataFrame operations)
+numpy        # For numerical operations (Haversine calculation)
+fastapi      # The web framework used for the API
+uvicorn   
