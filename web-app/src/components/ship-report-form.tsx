@@ -5,6 +5,27 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut, Star } from "lucide-react"
 
+// Add activity types interface
+const ACTIVITY_TYPES = [
+  { id: 'trespassing', label: 'Territorial Waters Trespassing' },
+  { id: 'fishing', label: 'Illegal Fishing' },
+  { id: 'pirating', label: 'Pirating Activity' },
+  { id: 'smuggling', label: 'Suspected Smuggling' },
+  { id: 'environmental', label: 'Environmental Violation' },
+  { id: 'other', label: 'Other Suspicious Activity' },
+] as const;
+
+// Add vessel headings interface
+const VESSEL_HEADINGS = [
+  { id: 'N', label: 'North' },
+  { id: 'E', label: 'East' },
+  { id: 'S', label: 'South' },
+  { id: 'W', label: 'West' },
+  { id: 'docked', label: 'Docked' },
+  { id: 'stationary', label: 'Stationary' },
+  { id: 'unknown', label: 'Unknown' },
+] as const;
+
 interface ShipReportFormProps {
   user: { id: string; name: string; score: number } | null
   onLogout: () => void
@@ -20,6 +41,8 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isCameraActive, setIsCameraActive] = useState(false)
+  const [activityType, setActivityType] = useState<string>('')
+  const [vesselHeading, setVesselHeading] = useState<string>('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -129,6 +152,8 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
     const formData = new FormData()
     if (image) formData.append("image", image)
     formData.append("description", description)
+    formData.append("activityType", activityType)
+    formData.append("vesselHeading", vesselHeading)
 
     if (location) {
       formData.append("latitude", location.latitude.toString())
@@ -233,21 +258,6 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="description" className="block text-sm font-medium">
-              Provide Details
-            </label>
-            <textarea
-              id="description"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Describe the ship you saw..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={4}
-            />
-          </div>
-
-          <div className="space-y-2">
             <label className="block text-sm font-medium">Send Image</label>
             {imagePreview ? (
               <div className="border rounded-md p-2">
@@ -340,9 +350,64 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             )}
           </div>
 
+          {/* Activity Type Dropdown */}
+          <div className="space-y-1">
+            <label htmlFor="activityType" className="block text-sm font-medium">
+              Activity Type
+            </label>
+            <select
+              id="activityType"
+              value={activityType}
+              onChange={(e) => setActivityType(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">Select activity type...</option>
+              {ACTIVITY_TYPES.map(type => (
+                <option key={type.id} value={type.id}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Vessel Heading Dropdown */}
+          <div className="space-y-1">
+            <label htmlFor="vesselHeading" className="block text-sm font-medium">
+              Vessel Heading
+            </label>
+            <select
+              id="vesselHeading"
+              value={vesselHeading}
+              onChange={(e) => setVesselHeading(e.target.value)}
+              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">Select vessel heading...</option>
+              {VESSEL_HEADINGS.map(heading => (
+                <option key={heading.id} value={heading.id}>
+                  {heading.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Details textarea now comes after activity type */}
+          <div className="space-y-1">
+            <label htmlFor="description" className="block text-sm font-medium">
+              Provide Details
+            </label>
+            <textarea
+              id="description"
+              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Describe the ship you saw..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={2}
+            />
+          </div>
+
           <button
             type="submit"
-            disabled={isSubmitting || (!description && !image)}
+            disabled={isSubmitting || (!image && !location)}
             className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Ship className="h-4 w-4" />
