@@ -4,6 +4,8 @@ import logging
 import os
 import json
 from db_utils import get_trust_score, store_user_metadata, get_or_create_report_number, get_visibility_for_location
+import uuid
+from datetime import datetime
 
 from shared import ReportDetails, EnrichedReportDetails
 
@@ -246,6 +248,11 @@ async def _convert_to_prometheus_metrics(report_data) -> str:
         enriched_description = report_data.get('enriched_description')
         visibility = report_data.get('visibility')
         ais_neighbours = report_data.get('ais_neighbours')
+        timestamp_str = report_data.get('timestamp')
+        if timestamp_str:
+            timestamp = int(datetime.fromisoformat(timestamp_str.replace('Z', '+00:00')).timestamp() * 1000)
+        else:
+            timestamp = int(datetime.now().timestamp() * 1000)
     else:
         source_account_id = report_data.source_account_id
         latitude = report_data.latitude
@@ -255,6 +262,11 @@ async def _convert_to_prometheus_metrics(report_data) -> str:
         enriched_description = getattr(report_data, 'enriched_description', None)
         visibility = getattr(report_data, 'visibility', None)
         ais_neighbours = getattr(report_data, 'ais_neighbours', None)
+        timestamp_str = getattr(report_data, 'timestamp', None)
+        if timestamp_str:
+            timestamp = int(datetime.fromisoformat(timestamp_str.replace('Z', '+00:00')).timestamp() * 1000)
+        else:
+            timestamp = int(datetime.now().timestamp() * 1000)
     
     # Determine if this is initial or final metrics
     is_final = report_number is not None and trust_score is not None
@@ -268,23 +280,24 @@ async def _convert_to_prometheus_metrics(report_data) -> str:
         metrics.append(
             f'ship_info{{source_account_id="{source_account_id}",'
             f'latitude="{latitude}",longitude="{longitude}",'
-            f'stage="{stage}"}} 1'
+            f'stage="{stage}",timestamp="{timestamp}"}} 1'
         )
     else:
         # For final metrics, we have all enriched data
         metrics.extend([
             f'ship_trust_score{{source_account_id="{source_account_id}",'
             f'latitude="{latitude}",longitude="{longitude}",'
-            f'report_number="{report_number}",stage="{stage}",enriched="true"}} {trust_score}',
+            f'report_number="{report_number}",stage="{stage}",enriched="true",'
+            f'timestamp="{timestamp}"}} {trust_score}',
             f'ship_report_number_total{{source_account_id="{source_account_id}",'
             f'latitude="{latitude}",longitude="{longitude}",'
-            f'stage="{stage}",enriched="true"}} 1'
+            f'stage="{stage}",enriched="true",timestamp="{timestamp}"}} 1'
         ])
         if enriched_description:
             metrics.append(
                 f'ship_description_length{{source_account_id="{source_account_id}",'
                 f'latitude="{latitude}",longitude="{longitude}",'
-                f'stage="{stage}",enriched="true"}} {len(enriched_description)}'
+                f'stage="{stage}",enriched="true",timestamp="{timestamp}"}} {len(enriched_description)}'
             )
             # Add a new metric for the LLM enrichment result
             # We'll use a gauge type metric with a fixed value of 1 to indicate presence
@@ -294,7 +307,7 @@ async def _convert_to_prometheus_metrics(report_data) -> str:
                 f'ship_llm_enrichment{{source_account_id="{source_account_id}",'
                 f'latitude="{latitude}",longitude="{longitude}",'
                 f'report_number="{report_number}",stage="{stage}",enriched="true",'
-                f'description="{escaped_description}"}} 1'
+                f'description="{escaped_description}",timestamp="{timestamp}"}} 1'
             )
     
     result = '\n'.join(metrics)
