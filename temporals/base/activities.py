@@ -3,7 +3,7 @@ import random
 import logging
 import os
 import json
-from db_utils import get_trust_score, store_user_metadata
+from db_utils import get_trust_score, store_user_metadata, get_or_create_report_number, get_visibility_for_location
 
 from shared import ReportDetails, EnrichedReportDetails
 
@@ -36,18 +36,23 @@ async def calculate_trust_score(source_account_id: str, ip: str = None, user_age
 
 @activity.defn
 async def assign_report_number(report: ReportDetails) -> str:
-    logging.info(f"Fetching AIS number for ship at coordinates: {report.latitude}, {report.longitude}")
-    # Fake external API call
-    report_number = f"AIS-{random.randint(10000, 99999)}"
-    logging.info(f"Generated AIS number: {report_number}")
+    """
+    Assign a report number using backend/AIS data instead of random placeholder.
+    """
+    logging.info(f"Assigning report number for ship at coordinates: {report.latitude}, {report.longitude}")
+    # Use backend or AIS data to get or create a report number
+    report_number = get_or_create_report_number(report.latitude, report.longitude)
+    logging.info(f"Assigned report number: {report_number}")
     return report_number
 
 @activity.defn
 async def calculate_visibility(report: EnrichedReportDetails) -> int:
-    logging.info(f"Checking weather at coordinates: {report.latitude}, {report.longitude}")
-    # Fake external API call
-    visibility = random.randint(5, 10)
-    logging.info(f"Generated AIS number: {visibility}")
+    """
+    Calculate visibility using real backend/API data instead of random placeholder.
+    """
+    logging.info(f"Calculating visibility at coordinates: {report.latitude}, {report.longitude}")
+    visibility = get_visibility_for_location(report.latitude, report.longitude)
+    logging.info(f"Calculated visibility: {visibility}")
     return visibility
 
 @activity.defn
@@ -142,7 +147,7 @@ async def llm_enrich(report: EnrichedReportDetails) -> str:
         }
         
         data = {
-            "model": "gpt-3.5-turbo",
+            "model": "gpt-4o-mini",
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
@@ -259,11 +264,12 @@ async def _convert_to_prometheus_metrics(report_data) -> str:
             # Add a new metric for the LLM enrichment result
             # We'll use a gauge type metric with a fixed value of 1 to indicate presence
             # and include the enriched description as a label
+            escaped_description = enriched_description.replace('"', '\\"')
             metrics.append(
                 f'ship_llm_enrichment{{source_account_id="{source_account_id}",'
                 f'latitude="{latitude}",longitude="{longitude}",'
                 f'report_number="{report_number}",stage="{stage}",enriched="true",'
-                f'description="{enriched_description.replace('"', '\\"')}"}} 1'
+                f'description="{escaped_description}"}} 1'
             )
     
     result = '\n'.join(metrics)
