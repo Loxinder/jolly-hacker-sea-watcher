@@ -1,9 +1,9 @@
 # jolly-hacker-sea-watcher
 
-## Ship Enrichment System
+## Sighting Enrichment System
 
-This system processes ship data through a workflow that enriches it with AIS numbers and trust scores. It exposes metrics at two points:
-1. When ships are first submitted
+This system processes sighting data through a workflow that enriches it with AIS data and trust scores. It exposes metrics at two points:
+1. When the ship sighting is first submitted
 2. After enrichment is complete
 
 ### Prerequisites
@@ -56,7 +56,7 @@ You can press Ctrl+C to stop all components when the script is running.
 
 ### Testing the System
 
-1. Submit a ship:
+1. Submit a ship sighting:
 ```bash
 curl -X POST "http://localhost:8001/submit_ship" \
   -H "Content-Type: application/json" \
