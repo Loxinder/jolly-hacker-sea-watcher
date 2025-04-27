@@ -11,6 +11,15 @@ module.exports = {
         sans: ['var(--font-geist-sans)'],
         mono: ['var(--font-geist-mono)'],
       },
+      textColor: {
+        foreground: 'var(--foreground)',
+        'button-text': 'var(--button-text)',
+        label: 'var(--label-color)',
+      },
+      backgroundColor: {
+        'button-bg': 'var(--button-bg)',
+        'button-hover-bg': 'var(--button-hover-bg)',
+      },
     },
   },
   plugins: [],

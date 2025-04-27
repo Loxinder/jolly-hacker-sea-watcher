@@ -42,7 +42,7 @@ export default function LoginForm({ onLogin, t }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="space-y-2">
-        <label htmlFor="username" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+        <label htmlFor="username" className="block text-sm font-medium text-label">
           {t('username')}
         </label>
         <input
@@ -56,7 +56,7 @@ export default function LoginForm({ onLogin, t }: LoginFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="password" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+        <label htmlFor="password" className="block text-sm font-medium text-label">
           {t('password')}
         </label>
         <input

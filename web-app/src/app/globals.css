@@ -4,7 +4,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827; /* Darker text for better contrast */
   --primary: #2563eb;
   --secondary: #f3f4f6;
   --border: #e5e7eb;
@@ -17,12 +17,13 @@
   --error-text: #b91c1c;
   --success-bg: #f0fdf4;
   --success-text: #166534;
+  --label-color: #374151; /* New variable specifically for form labels */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #f9fafb; /* Lighter text for better contrast in dark mode */
     --primary: #60a5fa;
     --secondary: #1f2937;
     --border: #374151;
@@ -35,6 +36,7 @@
     --error-text: #fee2e2;
     --success-bg: #052e16;
     --success-text: #bbf7d0;
+    --label-color: #d1d5db; /* Light gray for labels in dark mode */
   }
 }
 
@@ -84,4 +86,9 @@ button:hover:not(:disabled) {
 
 .bg-success {
   background: var(--success-bg);
+}
+
+/* Add specific styling for form labels */
+.text-label {
+  color: var(--label-color);
 }

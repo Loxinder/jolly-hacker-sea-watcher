@@ -346,7 +346,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+            <label className="block text-sm font-medium text-label">
               {t("sendImage")}
             </label>
             {imagePreview ? (
@@ -407,7 +407,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+            <label className="block text-sm font-medium text-label">
               {t("sendLocation")}
             </label>
             {location ? (
@@ -444,7 +444,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Activity Type Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="activityType" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+            <label htmlFor="activityType" className="block text-sm font-medium text-label">
               {t("activityType")}
             </label>
             <select
@@ -464,7 +464,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Vessel Heading Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="vesselHeading" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+            <label htmlFor="vesselHeading" className="block text-sm font-medium text-label">
               {t("vesselHeading")}
             </label>
             <select
@@ -484,7 +484,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Vessel Registry Flag Dropdown */}
           <div className="space-y-1">
-            <label htmlFor="vesselRegistry" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+            <label htmlFor="vesselRegistry" className="block text-sm font-medium text-label">
               {t("vesselRegistryFlag")}
             </label>
             <select
@@ -504,7 +504,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
 
           {/* Details textarea now comes after activity type */}
           <div className="space-y-1">
-            <label htmlFor="description" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
+            <label htmlFor="description" className="block text-sm font-medium text-label">
               {t("provideDetails")}
             </label>
             <textarea
@@ -576,8 +576,8 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
             {/* User info and logout */}
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-300" style={{ color: 'var(--foreground)', opacity: 1 }}>{t("loggedInAs")}</p>
-                <p className="text-sm font-semibold" style={{ color: 'var(--foreground)', opacity: 1 }}>{user?.name}</p>
+                <p className="text-sm font-medium text-foreground opacity-70">{t("loggedInAs")}</p>
+                <p className="text-sm font-semibold text-foreground">{user?.name}</p>
               </div>
               <button
                 onClick={onLogout}
