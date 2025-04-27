@@ -263,9 +263,72 @@ start_main_server() {
     cd ../..
 }
 
+# Function to start Next.js web app
+start_web_app() {
+    echo -e "${BLUE}Starting Next.js web application...${NC}"
+    
+    # Check if port is available
+    if ! check_port_available 3000 "Next.js web app"; then
+        echo -e "${YELLOW}Next.js web app might already be running.${NC}"
+        return
+    fi
+    
+    # Start Next.js web app in background
+    cd web-app
+    
+    # Check if npm is installed
+    if command_exists npm; then
+        echo -e "${BLUE}Starting Next.js web app with npm...${NC}"
+        npm run dev > web_app.log 2>&1 &
+        WEB_APP_PID=$!
+    # Check if yarn is installed
+    elif command_exists yarn; then
+        echo -e "${BLUE}Starting Next.js web app with yarn...${NC}"
+        yarn dev > web_app.log 2>&1 &
+        WEB_APP_PID=$!
+    # Check if bun is installed (since bun.lockb is in the files)
+    elif command_exists bun; then
+        echo -e "${BLUE}Starting Next.js web app with bun...${NC}"
+        bun run dev > web_app.log 2>&1 &
+        WEB_APP_PID=$!
+    else
+        echo -e "${RED}No package manager (npm, yarn, or bun) found. Cannot start Next.js web app.${NC}"
+        cd ..
+        return 1
+    fi
+    
+    # Wait for web app to start
+    echo -e "${BLUE}Waiting for Next.js web app to start...${NC}"
+    sleep 10
+    
+    # Check if web app started successfully
+    if kill -0 $WEB_APP_PID 2>/dev/null; then
+        echo -e "${GREEN}Next.js web app started with PID $WEB_APP_PID.${NC}"
+        echo $WEB_APP_PID > web_app.pid
+    else
+        echo -e "${RED}Failed to start Next.js web app. Check web_app.log for details.${NC}"
+        cd ..
+        return 1
+    fi
+    
+    cd ..
+    return 0
+}
+
 # Function to stop all components
 stop_all() {
     echo -e "${BLUE}Stopping all components...${NC}"
+    
+    # Stop Next.js web app
+    if [ -f "web-app/web_app.pid" ]; then
+        WEB_APP_PID=$(cat web-app/web_app.pid)
+        if kill -0 $WEB_APP_PID 2>/dev/null; then
+            echo -e "${BLUE}Stopping Next.js web app (PID $WEB_APP_PID)...${NC}"
+            kill $WEB_APP_PID
+            echo -e "${GREEN}Next.js web app stopped.${NC}"
+        fi
+        rm web-app/web_app.pid
+    fi
     
     # Stop main server
     if [ -f "temporals/base/main_server.pid" ]; then
@@ -331,6 +394,14 @@ help() {
 main() {
     echo -e "${BLUE}Starting Ship Enrichment System...${NC}"
     
+    # Ensure web-app JS dependencies are installed (all from package.json)
+    echo -e "${BLUE}Ensuring all web-app JS dependencies are installed...${NC}"
+    (cd web-app && npm install)
+
+    # Upgrade pip to latest version
+    echo -e "${BLUE}Upgrading pip to the latest version...${NC}"
+    python3 -m pip install --upgrade pip
+    
     # Check prerequisites
     check_python_version
     check_temporal_cli
@@ -340,13 +411,16 @@ main() {
     start_ais_mock_server
     start_temporal_worker
     start_main_server
+    start_web_app
     
     echo -e "${GREEN}Ship Enrichment System started successfully.${NC}"
     echo -e "\n${YELLOW}Access the running services at the following URLs:${NC}"
     echo -e "  - Temporal Server:         http://localhost:7234"
     echo -e "  - Temporal Web UI:         http://localhost:8233"
     echo -e "  - AIS Mock Server (API):   http://localhost:8000"
-    echo -e "  - Main Server (Web UI):    http://localhost:8001  ${GREEN}<-- Web UI${NC}"
+    echo -e "  - Main Server (API):       http://localhost:8001"
+    echo -e "  - Web Application (UI):    http://localhost:3000  ${GREEN}<-- Web UI${NC}"
+    
     echo -e "\n${YELLOW}Press Ctrl+C to stop all components.${NC}"
     
     # Keep script running until interrupted
