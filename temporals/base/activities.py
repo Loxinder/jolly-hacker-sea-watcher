@@ -24,7 +24,7 @@ async def assign_report_number(report: ReportDetails) -> str:
 async def calculate_visibility(report: EnrichedReportDetails) -> int:
     logging.info(f"Checking weather at coordinates: {report.latitude}, {report.longitude}")
     # Fake external API call
-    visibility = random.randint(1, 10)
+    visibility = random.randint(5, 10)
     logging.info(f"Generated AIS number: {visibility}")
     return visibility
 
@@ -45,11 +45,10 @@ async def find_ais_neighbours(report: EnrichedReportDetails) -> list[str]:
 
         # Handle cases where response might not have JSON body if needed
         ais_data = response.json()
-        logging.info(f"Received AIS data from the report location: {ais_data}")
         neighbours = []
         for ship in ais_data:
             logging.info(f"{ship}")
-            neighbours.append(ship.vessel_name)
+            neighbours.append(ship["vessel_name"])
 
         logging.info(f"Found ships around location at this time: {neighbours}")
         return neighbours
