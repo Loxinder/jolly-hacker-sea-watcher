@@ -3,15 +3,35 @@ import random
 import logging
 import os
 import json
+from db_utils import get_trust_score, store_user_metadata
 
 from shared import ReportDetails, EnrichedReportDetails
 
 @activity.defn
-async def calculate_trust_score(source_account_id: str) -> float:
+async def calculate_trust_score(source_account_id: str, ip: str = None, user_agent: str = None, is_logged_in: bool = False) -> float:
+    """
+    Calculate or retrieve the trust score for a user from the DB/API. Store user metadata.
+    Args:
+        source_account_id: User/account identifier.
+        ip: User IP address (optional, for logging/analytics).
+        user_agent: User agent string (optional).
+        is_logged_in: Whether the user is logged in.
+    Returns:
+        Trust score as a float.
+    """
     logging.info(f"Calculating trust score for account: {source_account_id}")
-    # Fake trust calculation
-    trust_score = round(random.uniform(0.5, 1.0), 2)
-    logging.info(f"Calculated trust score: {trust_score}")
+    # Store user metadata if provided
+    if ip or user_agent:
+        store_user_metadata(ip=ip, user_agent=user_agent, source_account_id=source_account_id, is_logged_in=is_logged_in)
+    # Try to get trust score from DB
+    trust_score = get_trust_score(source_account_id)
+    if trust_score is not None:
+        logging.info(f"Fetched trust score from DB: {trust_score}")
+        return trust_score
+    # TODO: Insert your trust score calculation logic here if not found in DB
+    # For now, default to a safe value (e.g., 0.7)
+    trust_score = 0.7
+    logging.info(f"Defaulted trust score to: {trust_score}")
     return trust_score
 
 @activity.defn
