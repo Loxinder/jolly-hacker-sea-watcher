@@ -41,12 +41,12 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="space-y-2">
-        <label htmlFor="username" className="block text-sm font-medium">
+        <label htmlFor="username" className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
           Username
         </label>
         <input
           id="username"
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
           placeholder="Enter your username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -54,13 +54,13 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         />
       </div>
       <div className="space-y-2">
-        <label htmlFor="password" className="block text-sm font-medium">
+        <label htmlFor="password" className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
           Password
         </label>
         <input
           id="password"
           type="password"
-          className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -71,14 +71,14 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-2 rounded-md transition-colors bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? "Logging in..." : "Login"}
         </button>
         <button
           type="button"
           onClick={handleSkip}
-          className="w-full border px-4 py-2 rounded-md hover:bg-gray-50"
+          className="w-full border border-custom px-4 py-2 rounded-md hover:bg-secondary transition-colors"
         >
           Continue as Guest
         </button>

@@ -499,12 +499,12 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
           {/* Details textarea now comes after activity type */}
           <div className="space-y-1">
-            <label htmlFor="description" className="block text-sm font-medium">
+            <label htmlFor="description" className="block text-sm font-medium" style={{ color: 'var(--foreground)' }}>
               Provide Details
             </label>
             <textarea
               id="description"
-              className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full rounded-md border border-custom px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="Describe the ship you saw..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -515,19 +515,19 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           <button
             type="submit"
             disabled={isSubmitting || (!image && !location)}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full px-4 py-2 rounded-md transition-colors bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Ship className="h-4 w-4" />
             {isSubmitting ? "Submitting..." : "Submit Report"}
           </button>
 
           {formError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-2">
+            <div className="bg-error border border-custom rounded-lg p-4 mt-2">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-red-600" />
-                <h4 className="font-medium">Error</h4>
+                <AlertCircle className="h-4 w-4 text-error" />
+                <h4 className="font-medium text-error">Error</h4>
               </div>
-              <p className="text-sm mt-1">{formError}</p>
+              <p className="text-sm mt-1 text-error">{formError}</p>
             </div>
           )}
 
@@ -542,18 +542,18 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           )}
 
           {/* Maritime Observer Status and User Info */}
-          <div className="mt-8 pt-4 border-t">
+          <div className="mt-8 pt-4 border-t border-custom">
             {/* Observer Status */}
             {user && (
-              <div className="mb-4 bg-gradient-to-b from-blue-50 to-white p-4 rounded-lg border border-blue-100">
-                <p className="text-sm font-medium text-gray-500 mb-1 text-center">MARITIME OBSERVER STATUS</p>
+              <div className="mb-4 bg-gradient-to-b from-blue-50 to-white dark:from-blue-900 dark:to-secondary p-4 rounded-lg border border-blue-100 dark:border-blue-900">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1 text-center">MARITIME OBSERVER STATUS</p>
                 
                 <div className="flex justify-center gap-1 mb-1">
                   {renderStars(user.score)}
                 </div>
                 
                 {user.score > 0 ? (
-                  <p className="text-sm text-center font-medium text-gray-700 mt-1">
+                  <p className="text-sm text-center font-medium text-gray-700 dark:text-gray-100 mt-1">
                     {user.score >= 5 ? 
                       "Maritime Security Specialist" : 
                       user.score >= 3 ? 
@@ -561,7 +561,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                         "Qualified Maritime Observer"}
                   </p>
                 ) : (
-                  <p className="text-xs text-center text-gray-500 mt-1">
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
                     Submit your first report to establish credentials
                   </p>
                 )}
@@ -571,12 +571,12 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             {/* User info and logout */}
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-gray-500">Logged in as</p>
-                <p className="text-sm font-semibold">{user?.name}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Logged in as</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>{user?.name}</p>
               </div>
               <button
                 onClick={onLogout}
-                className="px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 flex items-center gap-2"
+                className="px-3 py-1.5 text-sm border border-custom rounded-md hover:bg-secondary transition-colors flex items-center gap-2"
               >
                 <LogOut className="h-4 w-4" />
                 Logout
