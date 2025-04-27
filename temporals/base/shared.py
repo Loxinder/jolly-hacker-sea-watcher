@@ -8,6 +8,7 @@ class ReportDetails(BaseModel):
     latitude: float
     longitude: float
     picture_url: str
+    description: Optional[str] = None
     vessel_registry: Optional[str] = None
 
 class EnrichedReportDetails(ReportDetails):
@@ -15,3 +16,4 @@ class EnrichedReportDetails(ReportDetails):
     trust_score: Optional[float] = None
     ais_neighbours: Optional[list[str]] = None
     visibility: Optional[int] = 1
+    enriched_description: Optional[str] = None

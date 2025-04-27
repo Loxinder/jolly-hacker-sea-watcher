@@ -6,7 +6,14 @@ import logging
 from datetime import timedelta
 from shared import ReportDetails, EnrichedReportDetails
 
-from activities import calculate_trust_score, assign_report_number, calculate_visibility, find_ais_neighbours, convert_to_prometheus_metrics
+from activities import (
+    calculate_trust_score, 
+    assign_report_number, 
+    calculate_visibility, 
+    find_ais_neighbours, 
+    convert_to_prometheus_metrics,
+    llm_enrich
+)
 
 RETRY_POLICY = RetryPolicy(
     initial_interval=timedelta(seconds=5),
@@ -66,6 +73,14 @@ class ReportDetailsWorkflow:
             retry_policy=RETRY_POLICY,
         )
         logging.info(f"Trust score calculated: {enriched.trust_score}")
+
+        enriched.enriched_description = await workflow.execute_activity(
+            llm_enrich,
+            enriched,
+            start_to_close_timeout=timedelta(seconds=30),
+            retry_policy=RETRY_POLICY,
+        )
+        logging.info(f"Description enriched: {enriched.enriched_description}")
 
         # Store final metrics
         final_metric = await workflow.execute_activity(

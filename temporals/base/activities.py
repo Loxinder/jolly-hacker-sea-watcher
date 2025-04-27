@@ -60,25 +60,31 @@ async def find_ais_neighbours(report: EnrichedReportDetails) -> list[str]:
 
 
 @activity.defn
-async def convert_to_prometheus_metrics(ship_data) -> str:
-    return await _convert_to_prometheus_metrics(ship_data)
+async def convert_to_prometheus_metrics(report_data) -> str:
+    return await _convert_to_prometheus_metrics(report_data)
 
-async def _convert_to_prometheus_metrics(ship_data) -> str:
-    logging.info(f"Converting to Prometheus metrics: {ship_data}")
+async def _convert_to_prometheus_metrics(report_data) -> str:
+    logging.info(f"Converting to Prometheus metrics: {report_data}")
     
     # Handle both dict and object inputs
-    if isinstance(ship_data, dict):
-        source_account_id = ship_data['source_account_id']
-        latitude = ship_data['latitude']
-        longitude = ship_data['longitude']
-        report_number = ship_data.get('report_number')
-        trust_score = ship_data.get('trust_score')
+    if isinstance(report_data, dict):
+        source_account_id = report_data['source_account_id']
+        latitude = report_data['latitude']
+        longitude = report_data['longitude']
+        report_number = report_data.get('report_number')
+        trust_score = report_data.get('trust_score')
+        enriched_description = report_data.get('enriched_description')
+        visibility = report_data.get('visibility')
+        ais_neighbours = report_data.get('ais_neighbours')
     else:
-        source_account_id = ship_data.source_account_id
-        latitude = ship_data.latitude
-        longitude = ship_data.longitude
-        report_number = getattr(ship_data, 'report_number', None)
-        trust_score = getattr(ship_data, 'trust_score', None)
+        source_account_id = report_data.source_account_id
+        latitude = report_data.latitude
+        longitude = report_data.longitude
+        report_number = getattr(report_data, 'report_number', None)
+        trust_score = getattr(report_data, 'trust_score', None)
+        enriched_description = getattr(report_data, 'enriched_description', None)
+        visibility = getattr(report_data, 'visibility', None)
+        ais_neighbours = getattr(report_data, 'ais_neighbours', None)
     
     # Determine if this is initial or final metrics
     is_final = report_number is not None and trust_score is not None
@@ -104,7 +110,37 @@ async def _convert_to_prometheus_metrics(ship_data) -> str:
             f'latitude="{latitude}",longitude="{longitude}",'
             f'stage="{stage}",enriched="true"}} 1'
         ])
+        if enriched_description:
+            metrics.append(
+                f'ship_description_length{{source_account_id="{source_account_id}",'
+                f'latitude="{latitude}",longitude="{longitude}",'
+                f'stage="{stage}",enriched="true"}} {len(enriched_description)}'
+            )
     
     result = '\n'.join(metrics)
     logging.info(f"Generated Prometheus metrics: {result}")
     return result
+
+@activity.defn
+async def llm_enrich(report: EnrichedReportDetails) -> str:
+    """
+    Enriches the report description using LLM.
+    This activity takes the existing description and enhances it with additional context
+    about the vessel, location, and surrounding conditions.
+    """
+    logging.info(f"Enriching description for ship at coordinates: {report.latitude}, {report.longitude}")
+    
+    # TODO: Implement LLM enrichment logic
+    # This is where you would:
+    # 1. Prepare the prompt with ship details
+    # 2. Call your LLM service
+    # 3. Process and return the enriched description
+    
+    # For now, return a placeholder enriched description
+    enriched_description = f"Vessel {report.report_number} observed at coordinates ({report.latitude}, {report.longitude}). "
+    if report.ais_neighbours:
+        enriched_description += f"Nearby vessels: {', '.join(report.ais_neighbours)}. "
+    enriched_description += f"Visibility conditions: {report.visibility}/10. Trust score: {report.trust_score}."
+    
+    logging.info(f"Generated enriched description: {enriched_description}")
+    return enriched_description
