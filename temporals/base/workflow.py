@@ -74,13 +74,20 @@ class ReportDetailsWorkflow:
         )
         logging.info(f"Trust score calculated: {enriched.trust_score}")
 
-        enriched.enriched_description = await workflow.execute_activity(
-            llm_enrich,
-            enriched,
-            start_to_close_timeout=timedelta(seconds=30),
-            retry_policy=RETRY_POLICY,
-        )
-        logging.info(f"Description enriched: {enriched.enriched_description}")
+        logging.info("Starting LLM enrichment activity...")
+        try:
+            enriched.enriched_description = await workflow.execute_activity(
+                llm_enrich,
+                enriched,
+                start_to_close_timeout=timedelta(seconds=30),
+                retry_policy=RETRY_POLICY,
+            )
+            logging.info(f"Description enriched successfully: {enriched.enriched_description}")
+        except Exception as e:
+            logging.error(f"Failed to enrich description: {str(e)}")
+            # Set a default description to indicate the enrichment failed
+            enriched.enriched_description = "Description enrichment failed. Please check the logs for details."
+            logging.info("Set default description due to enrichment failure")
 
         # Store final metrics
         final_metric = await workflow.execute_activity(
