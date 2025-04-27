@@ -1,17 +1,33 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import LoginForm from "@/components/login-form"
 import ShipReportForm from "@/components/ship-report-form"
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import languageNames from '../locales/languageNames';
 
+const supportedLngs = ['en', 'es', 'ar', 'zh', 'pt', 'uk', 'pl', 'tl', 'vi', 'th', 'tw', 'ja', 'id'];
+
+function detectBrowserLanguage() {
+  if (typeof window !== 'undefined') {
+    const browserLang = navigator.language.split('-')[0];
+    if (supportedLngs.includes(browserLang)) {
+      return browserLang;
+    }
+  }
+  return 'en';
+}
+
 export default function Home() {
+  const { t, i18n } = useTranslation();
+  const [language, setLanguage] = useState(() => detectBrowserLanguage());
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState<{ id: string; name: string; score: number } | null>(null)
-  const { t, i18n } = useTranslation();
-  const [language, setLanguage] = useState(i18n.language);
+
+  useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language, i18n]);
 
   const languages = [
     { code: 'en', label: languageNames['en'] },
@@ -21,6 +37,12 @@ export default function Home() {
     { code: 'pt', label: languageNames['pt'] },
     { code: 'uk', label: languageNames['uk'] },
     { code: 'pl', label: languageNames['pl'] },
+    { code: 'tl', label: languageNames['tl'] },
+    { code: 'vi', label: languageNames['vi'] },
+    { code: 'th', label: languageNames['th'] },
+    { code: 'tw', label: languageNames['tw'] },
+    { code: 'ja', label: languageNames['ja'] },
+    { code: 'id', label: languageNames['id'] },
   ];
 
   // Mock login function - in a real app, this would connect to your backend
