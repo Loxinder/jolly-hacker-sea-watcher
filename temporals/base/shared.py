@@ -2,13 +2,15 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class ShipDetails(BaseModel):
+class ReportDetails(BaseModel):
     source_account_id: str
     timestamp: str
     latitude: float
     longitude: float
     picture_url: str
 
-class EnrichedShipDetails(ShipDetails):
-    ais_number: Optional[str] = None
+class EnrichedReportDetails(ReportDetails):
+    report_number: Optional[str] = None
     trust_score: Optional[float] = None
+    ais_neighbours: Optional[list[str]] = None
+    visibility: Optional[int] = 1

@@ -2,8 +2,8 @@ from temporalio.worker import Worker
 import logging
 from temporalio.client import Client
 
-from activities import fetch_ais_number, calculate_trust_score, convert_to_prometheus_metrics
-from workflow import ShipDetailsWorkflow
+from activities import assign_report_number, calculate_trust_score, calculate_visibility, find_ais_neighbours, convert_to_prometheus_metrics
+from workflow import ReportDetailsWorkflow
 
 # Configure logging
 logging.basicConfig(
@@ -21,8 +21,8 @@ async def run_worker():
     worker = Worker(
         client,
         task_queue="ship-processing",
-        workflows=[ShipDetailsWorkflow],
-        activities=[fetch_ais_number, calculate_trust_score, convert_to_prometheus_metrics],
+        workflows=[ReportDetailsWorkflow],
+        activities=[assign_report_number, calculate_trust_score, calculate_visibility, find_ais_neighbours, convert_to_prometheus_metrics],
     )
 
     logger.info("Worker started, waiting for tasks...")
