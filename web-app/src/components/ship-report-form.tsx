@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut, Star } from "lucide-react"
 
 // Default API endpoint with fallback
-const API_ENDPOINT = process.env.SUBMIT_SHIP_ENDPOINT || 'http://localhost:8001/submit_ship';
+const API_ENDPOINT = process.env.SUBMIT_SHIP_ENDPOINT || '/api/submit_ship';
 
 // Add activity types interface
 const ACTIVITY_TYPES = [
