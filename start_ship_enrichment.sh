@@ -394,9 +394,9 @@ help() {
 main() {
     echo -e "${BLUE}Starting Ship Enrichment System...${NC}"
     
-    # Ensure web-app JS dependencies are installed (autoprefixer, postcss)
-    echo -e "${BLUE}Ensuring web-app JS dependencies (autoprefixer, postcss) are installed...${NC}"
-    (cd web-app && npm install --save-dev autoprefixer postcss)
+    # Ensure web-app JS dependencies are installed (all from package.json)
+    echo -e "${BLUE}Ensuring all web-app JS dependencies are installed...${NC}"
+    (cd web-app && npm install)
 
     # Upgrade pip to latest version
     echo -e "${BLUE}Upgrading pip to the latest version...${NC}"

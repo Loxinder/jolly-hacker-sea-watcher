@@ -10,62 +10,63 @@ const API_ENDPOINT = process.env.SUBMIT_SHIP_ENDPOINT || '/api/submit_ship';
 
 // Add activity types interface
 const ACTIVITY_TYPES = [
-  { id: 'trespassing', label: 'Territorial Waters Trespassing' },
-  { id: 'fishing', label: 'Illegal Fishing' },
-  { id: 'pirating', label: 'Pirating Activity' },
-  { id: 'smuggling', label: 'Suspected Smuggling' },
-  { id: 'environmental', label: 'Environmental Violation' },
-  { id: 'other', label: 'Other Suspicious Activity' },
+  { id: 'trespassing', labelKey: 'territorialWatersTrespassing' },
+  { id: 'fishing', labelKey: 'illegalFishing' },
+  { id: 'pirating', labelKey: 'piratingActivity' },
+  { id: 'smuggling', labelKey: 'suspectedSmuggling' },
+  { id: 'environmental', labelKey: 'environmentalViolation' },
+  { id: 'other', labelKey: 'otherSuspiciousActivity' },
 ] as const;
 
 // Add vessel headings interface
 const VESSEL_HEADINGS = [
-  { id: 'N', label: 'North' },
-  { id: 'E', label: 'East' },
-  { id: 'S', label: 'South' },
-  { id: 'W', label: 'West' },
-  { id: 'docked', label: 'Docked' },
-  { id: 'stationary', label: 'Stationary' },
-  { id: 'unknown', label: 'Unknown' },
+  { id: 'N', labelKey: 'north' },
+  { id: 'E', labelKey: 'east' },
+  { id: 'S', labelKey: 'south' },
+  { id: 'W', labelKey: 'west' },
+  { id: 'docked', labelKey: 'docked' },
+  { id: 'stationary', labelKey: 'stationary' },
+  { id: 'unknown', labelKey: 'unknown' },
 ] as const;
 
 // Add vessel registry flags
 const VESSEL_REGISTRY_FLAGS = [
-  { code: '🇺🇸', name: 'United States' },
-  { code: '🇬🇧', name: 'United Kingdom' },
-  { code: '🇨🇦', name: 'Canada' },
-  { code: '🇦🇺', name: 'Australia' },
-  { code: '🇳🇿', name: 'New Zealand' },
-  { code: '🇯🇵', name: 'Japan' },
-  { code: '🇨🇳', name: 'China' },
-  { code: '🇷🇺', name: 'Russia' },
-  { code: '🇮🇳', name: 'India' },
-  { code: '🇧🇷', name: 'Brazil' },
-  { code: '🇵🇦', name: 'Panama' },
-  { code: '🇱🇷', name: 'Liberia' },
-  { code: '🇲🇭', name: 'Marshall Islands' },
-  { code: '🇸🇬', name: 'Singapore' },
-  { code: '🇳🇴', name: 'Norway' },
-  { code: '🇬🇷', name: 'Greece' },
-  { code: '🇲🇹', name: 'Malta' },
-  { code: '🇨🇾', name: 'Cyprus' },
-  { code: '🇮🇹', name: 'Italy' },
-  { code: '🇫🇷', name: 'France' },
-  { code: '🇩🇪', name: 'Germany' },
-  { code: '🇳🇱', name: 'Netherlands' },
-  { code: '🇪🇸', name: 'Spain' },
-  { code: '🇵🇹', name: 'Portugal' },
-  { code: '🇩🇰', name: 'Denmark' },
-  { code: '🇸🇪', name: 'Sweden' },
-  { code: '🇫🇮', name: 'Finland' },
+  { code: '🇺🇸', nameKey: 'United States' },
+  { code: '🇬🇧', nameKey: 'United Kingdom' },
+  { code: '🇨🇦', nameKey: 'Canada' },
+  { code: '🇦🇺', nameKey: 'Australia' },
+  { code: '🇳🇿', nameKey: 'New Zealand' },
+  { code: '🇯🇵', nameKey: 'Japan' },
+  { code: '🇨🇳', nameKey: 'China' },
+  { code: '🇷🇺', nameKey: 'Russia' },
+  { code: '🇮🇳', nameKey: 'India' },
+  { code: '🇧🇷', nameKey: 'Brazil' },
+  { code: '🇵🇦', nameKey: 'Panama' },
+  { code: '🇱🇷', nameKey: 'Liberia' },
+  { code: '🇲🇭', nameKey: 'Marshall Islands' },
+  { code: '🇸🇬', nameKey: 'Singapore' },
+  { code: '🇳🇴', nameKey: 'Norway' },
+  { code: '🇬🇷', nameKey: 'Greece' },
+  { code: '🇲🇹', nameKey: 'Malta' },
+  { code: '🇨🇾', nameKey: 'Cyprus' },
+  { code: '🇮🇹', nameKey: 'Italy' },
+  { code: '🇫🇷', nameKey: 'France' },
+  { code: '🇩🇪', nameKey: 'Germany' },
+  { code: '🇳🇱', nameKey: 'Netherlands' },
+  { code: '🇪🇸', nameKey: 'Spain' },
+  { code: '🇵🇹', nameKey: 'Portugal' },
+  { code: '🇩🇰', nameKey: 'Denmark' },
+  { code: '🇸🇪', nameKey: 'Sweden' },
+  { code: '🇫🇮', nameKey: 'Finland' },
 ] as const;
 
 interface ShipReportFormProps {
   user: { id: string; name: string; score: number } | null
   onLogout: () => void
+  t: any
 }
 
-export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) {
+export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProps) {
   const [description, setDescription] = useState("")
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -104,7 +105,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
     setLocationError(null)
 
     if (!navigator.geolocation) {
-      setLocationError("Geolocation is not supported by your browser")
+      setLocationError(t("geolocationNotSupported"))
       setIsGettingLocation(false)
       return
     }
@@ -118,7 +119,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         setIsGettingLocation(false)
       },
       (error) => {
-        setLocationError(`Error getting location: ${error.message}`)
+        setLocationError(t("errorGettingLocation", { error: error.message }))
         setIsGettingLocation(false)
       },
     )
@@ -137,7 +138,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
       }
     } catch (err) {
       console.error("Error accessing camera:", err)
-      alert("Could not access the camera. Please check your permissions.")
+      alert(t("cameraAccessError"))
     }
   }
 
@@ -187,7 +188,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
     // Check if either image or location is provided
     if (!image && !location) {
-      setFormError("Either an image or location is required to submit a report")
+      setFormError(t("eitherImageOrLocationRequired"))
       setIsSubmitting(false)
       return
     }
@@ -248,7 +249,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false)
-      alert("Failed to submit report. Please try again.");
+      alert(t("failedToSubmitReport"))
     }
   }
 
@@ -308,9 +309,9 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-2">
             <Check className="h-4 w-4 text-green-600" />
-            <h4 className="font-medium">Success!</h4>
+            <h4 className="font-medium">{t("success")}</h4>
           </div>
-          <p className="text-sm mt-1">Your ship report has been submitted successfully.</p>
+          <p className="text-sm mt-1">{t("reportSubmittedSuccessfully")}</p>
         </div>
       ) : isCameraActive ? (
         <div className="space-y-4">
@@ -325,14 +326,14 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2"
             >
               <Camera className="h-4 w-4" />
-              Take Photo
+              {t("takePhoto")}
             </button>
             <button
               type="button"
               onClick={stopCamera}
               className="flex-1 border px-4 py-2 rounded-md hover:bg-gray-50"
             >
-              Cancel
+              {t("cancel")}
             </button>
           </div>
         </div>
@@ -340,13 +341,13 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>Note:</strong> Either an image or location is required to submit a report. Other fields are optional.
+              <strong>{t("note")}</strong>: {t("eitherImageOrLocationRequired")}
             </p>
           </div>
 
           <div className="space-y-2">
             <label className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-              Send Image
+              {t("sendImage")}
             </label>
             {imagePreview ? (
               <div className="border rounded-md p-2">
@@ -365,14 +366,14 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                       if (fileInputRef.current) fileInputRef.current.value = ""
                     }}
                   >
-                    Remove
+                    {t("remove")}
                   </button>
                   <button
                     type="button"
                     className="flex-1 px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    Change
+                    {t("change")}
                   </button>
                 </div>
               </div>
@@ -384,7 +385,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload className="h-4 w-4" />
-                  Upload Image
+                  {t("uploadImage")}
                 </button>
                 <button
                   type="button"
@@ -392,7 +393,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                   onClick={startCamera}
                 >
                   <Camera className="h-4 w-4" />
-                  Take Photo
+                  {t("takePhoto")}
                 </button>
                 <input
                   ref={fileInputRef}
@@ -407,7 +408,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
 
           <div className="space-y-2">
             <label className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-              Send Location
+              {t("sendLocation")}
             </label>
             {location ? (
               <div className="p-3 bg-gray-100 rounded-md">
@@ -426,7 +427,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                 disabled={isGettingLocation}
               >
                 <MapPin className="h-4 w-4" />
-                {isGettingLocation ? "Getting location..." : "Get Current Location"}
+                {isGettingLocation ? t("gettingLocation") : t("getCurrentLocation")}
               </button>
             )}
 
@@ -434,7 +435,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="h-4 w-4 text-red-600" />
-                  <h4 className="font-medium">Error</h4>
+                  <h4 className="font-medium">{t("error")}</h4>
                 </div>
                 <p className="text-sm mt-1">{locationError}</p>
               </div>
@@ -444,7 +445,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           {/* Activity Type Dropdown */}
           <div className="space-y-1">
             <label htmlFor="activityType" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-              Activity Type
+              {t("activityType")}
             </label>
             <select
               id="activityType"
@@ -452,10 +453,10 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               onChange={(e) => setActivityType(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
-              <option value="">Select activity type...</option>
+              <option value="">{t("selectActivityType")}</option>
               {ACTIVITY_TYPES.map(type => (
                 <option key={type.id} value={type.id}>
-                  {type.label}
+                  {t(type.labelKey)}
                 </option>
               ))}
             </select>
@@ -464,7 +465,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           {/* Vessel Heading Dropdown */}
           <div className="space-y-1">
             <label htmlFor="vesselHeading" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-              Vessel Heading
+              {t("vesselHeading")}
             </label>
             <select
               id="vesselHeading"
@@ -472,19 +473,19 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               onChange={(e) => setVesselHeading(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
-              <option value="">Select vessel heading...</option>
+              <option value="">{t("selectVesselHeading")}</option>
               {VESSEL_HEADINGS.map(heading => (
                 <option key={heading.id} value={heading.id}>
-                  {heading.label}
+                  {t(heading.labelKey)}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Vessel Registry Dropdown */}
+          {/* Vessel Registry Flag Dropdown */}
           <div className="space-y-1">
             <label htmlFor="vesselRegistry" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-              Vessel Registry Flag (Optional)
+              {t("vesselRegistryFlag")}
             </label>
             <select
               id="vesselRegistry"
@@ -492,10 +493,10 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
               onChange={(e) => setVesselRegistry(e.target.value)}
               className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
             >
-              <option value="">Select vessel registry...</option>
+              <option value="">{t("selectRegistryFlag")}</option>
               {VESSEL_REGISTRY_FLAGS.map(flag => (
                 <option key={flag.code} value={flag.code}>
-                  {flag.code} {flag.name}
+                  {flag.code} {t(flag.nameKey)}
                 </option>
               ))}
             </select>
@@ -504,12 +505,12 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
           {/* Details textarea now comes after activity type */}
           <div className="space-y-1">
             <label htmlFor="description" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-              Provide Details
+              {t("provideDetails")}
             </label>
             <textarea
               id="description"
               className="w-full rounded-md border border-custom px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
-              placeholder="Describe the ship you saw..."
+              placeholder={t("describeShip")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -522,14 +523,14 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             className="w-full px-4 py-2 rounded-md transition-colors bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Ship className="h-4 w-4" />
-            {isSubmitting ? "Submitting..." : "Submit Report"}
+            {isSubmitting ? t("submitting") : t("submitReport")}
           </button>
 
           {formError && (
             <div className="bg-error border border-custom rounded-lg p-4 mt-2">
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-error" />
-                <h4 className="font-medium text-error">Error</h4>
+                <h4 className="font-medium text-error">{t("error")}</h4>
               </div>
               <p className="text-sm mt-1 text-error">{formError}</p>
             </div>
@@ -539,9 +540,9 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-yellow-600" />
-                <h4 className="font-medium">Guest Mode</h4>
+                <h4 className="font-medium">{t("guestMode")}</h4>
               </div>
-              <p className="text-sm mt-1">You're reporting as a guest. Your report will be anonymous.</p>
+              <p className="text-sm mt-1">{t("reportingAsGuest")}</p>
             </div>
           )}
 
@@ -550,7 +551,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             {/* Observer Status */}
             {user && (
               <div className="mb-4 bg-gradient-to-b from-blue-50 to-white dark:from-blue-900 dark:to-secondary p-4 rounded-lg border border-blue-100 dark:border-blue-900">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1 text-center">MARITIME OBSERVER STATUS</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1 text-center">{t("maritimeObserverStatus")}</p>
                 
                 <div className="flex justify-center gap-1 mb-1">
                   {renderStars(user.score)}
@@ -559,14 +560,14 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                 {user.score > 0 ? (
                   <p className="text-sm text-center font-medium text-gray-700 dark:text-gray-100 mt-1">
                     {user.score >= 5 ? 
-                      "Maritime Security Specialist" : 
+                      t("maritimeSecuritySpecialist") : 
                       user.score >= 3 ? 
-                        "Verified Coastal Monitor" : 
-                        "Qualified Maritime Observer"}
+                        t("verifiedCoastalMonitor") : 
+                        t("qualifiedMaritimeObserver")}
                   </p>
                 ) : (
                   <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
-                    Submit your first report to establish credentials
+                    {t("establishCredentials")}
                   </p>
                 )}
               </div>
@@ -575,7 +576,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
             {/* User info and logout */}
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-300" style={{ color: 'var(--foreground)', opacity: 1 }}>Logged in as</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-300" style={{ color: 'var(--foreground)', opacity: 1 }}>{t("loggedInAs")}</p>
                 <p className="text-sm font-semibold" style={{ color: 'var(--foreground)', opacity: 1 }}>{user?.name}</p>
               </div>
               <button
@@ -583,7 +584,7 @@ export default function ShipReportForm({ user, onLogout }: ShipReportFormProps) 
                 className="px-3 py-1.5 text-sm border border-custom rounded-md hover:bg-secondary transition-colors flex items-center gap-2"
               >
                 <LogOut className="h-4 w-4" />
-                Logout
+                {t("logout")}
               </button>
             </div>
           </div>

@@ -5,9 +5,10 @@ import { useState } from "react"
 
 interface LoginFormProps {
   onLogin: (user: { id: string; name: string; score: number }) => void
+  t: any
 }
 
-export default function LoginForm({ onLogin }: LoginFormProps) {
+export default function LoginForm({ onLogin, t }: LoginFormProps) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -42,29 +43,31 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="space-y-2">
         <label htmlFor="username" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-          Username
+          {t('username')}
         </label>
         <input
           id="username"
           className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
-          placeholder="Enter your username"
+          placeholder={t('enterUsername')}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          autoComplete="username"
         />
       </div>
       <div className="space-y-2">
         <label htmlFor="password" className="block text-sm font-medium" style={{ color: 'var(--foreground)', opacity: 1 }}>
-          Password
+          {t('password')}
         </label>
         <input
           id="password"
           type="password"
           className="w-full rounded-md border border-custom px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors placeholder-[color:var(--foreground)] placeholder-opacity-70"
-          placeholder="Enter your password"
+          placeholder={t('enterPassword')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
       </div>
       <div className="flex flex-col space-y-2">
@@ -73,14 +76,14 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           disabled={isLoading}
           className="w-full px-4 py-2 rounded-md transition-colors bg-[var(--button-bg)] text-[var(--button-text)] hover:bg-[var(--button-hover-bg)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? t('login') + '...' : t('login')}
         </button>
         <button
           type="button"
           onClick={handleSkip}
           className="w-full border border-custom px-4 py-2 rounded-md hover:bg-secondary transition-colors"
         >
-          Continue as Guest
+          {t('continueAsGuest')}
         </button>
       </div>
     </form>
