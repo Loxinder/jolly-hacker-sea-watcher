@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { MapPin, AlertCircle, Ship, Upload, Check, Camera, LogOut, Star } from "lucide-react"
 
 // Default API endpoint with fallback
-const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || '/submit_ship';
+const API_ENDPOINT = '/api/submit_ship';
 
 // Add activity types interface
 const ACTIVITY_TYPES = [
@@ -228,7 +228,13 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
       });
 
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        // Try to get detailed error message from API response
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `API request failed with status ${response.status}`);
+        } catch (parseError) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
       }
 
       const data = await response.json();
@@ -249,7 +255,7 @@ export default function ShipReportForm({ user, onLogout, t }: ShipReportFormProp
     } catch (error) {
       console.error("Error submitting form:", error);
       setIsSubmitting(false)
-      alert(t("failedToSubmitReport"))
+      setFormError(error instanceof Error ? error.message : t("failedToSubmitReport"))
     }
   }
 
