@@ -1,4 +1,5 @@
 # Presentation
+![static_media](/static_media/sea_watch-logo.png)
 ## Introduction
 
 Imagine waking up before dawn, the salty air thick with anticipation, as you prepare to set out to sea. For millions of fishermen and maritime workers around the world, the ocean is not just a livelihood—it's a way of life. But what happens when those waters, once a source of sustenance and security, become a battleground for invisible threats? When foreign vessels encroach on your shores, when international laws are bent or broken, and when the line between peace and conflict blurs into a grey zone?
