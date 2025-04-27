@@ -43,33 +43,30 @@ async def startup_event():
     temporal_client = await Client.connect("127.0.0.1:7234")
 
 
-@app.post("/submit_ship", response_model=EnrichedReportDetails)
+@app.post("/submit_ship", response_model=None, status_code=202)
 async def submit_ship(ship: ReportDetails):
     logger.info(f"Received ship: {ship}")
-    
-    # Store initial metrics
-    initial_metric = await _convert_to_prometheus_metrics(ship)
-    initial_metrics.append(initial_metric)
-    logger.info(f"Stored initial metric: {initial_metric}")
-    
-    # Start the workflow
-    handle = await temporal_client.start_workflow(
-        ReportDetailsWorkflow.run,
-        ship,
-        id=f"ship-{ship.source_account_id}",
-        task_queue="ship-processing",
-    )
-    
-    # Get the result
-    result = await handle.result()
-    logger.info(f"Workflow result: {result}")
-    
-    # Store final metrics
-    final_metric = await _convert_to_prometheus_metrics(result)
-    final_metrics.append(final_metric)
-    logger.info(f"Stored final metric: {final_metric}")
-    
-    return result
+    # Move all processing to background
+    async def run_workflow_bg():
+        # Store initial metrics
+        initial_metric = await _convert_to_prometheus_metrics(ship)
+        initial_metrics.append(initial_metric)
+        logger.info(f"Stored initial metric: {initial_metric}")
+        # Start the workflow
+        handle = await temporal_client.start_workflow(
+            ReportDetailsWorkflow.run,
+            ship,
+            id=f"ship-{ship.source_account_id}",
+            task_queue="ship-processing",
+        )
+        result = await handle.result()
+        logger.info(f"Workflow result: {result}")
+        final_metric = await _convert_to_prometheus_metrics(result)
+        final_metrics.append(final_metric)
+        logger.info(f"Stored final metric: {final_metric}")
+    import asyncio
+    asyncio.create_task(run_workflow_bg())
+    return {"status": "accepted", "detail": "Processing started"}
 
 @app.get("/metrics")
 async def get_metrics():

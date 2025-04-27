@@ -38,6 +38,7 @@ async def run_worker():
     )
 
     logger.info("Worker started, waiting for tasks...")
+    logging.info(f"Registered activities: {[fn.__name__ for fn in [assign_report_number, calculate_trust_score, calculate_visibility, find_ais_neighbours, convert_to_prometheus_metrics, llm_enrich]]}")
     await worker.run()
 
 if __name__ == "__main__":
